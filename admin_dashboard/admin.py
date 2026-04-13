@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.db.models.signals import post_save
 from rest_framework_api_key.models import APIKey
 from vida_verified.models import ReportRequest
 
@@ -40,14 +39,19 @@ class ReportRequestAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         if not change:
-            obj.user = request.user
-        super().save_model(request, obj, form, change)
-        # The signal handler is registered for sender=ReportRequest,
-        # but saving via the admin uses ReportRequestProxy — Django fires
-        # post_save with the proxy as sender, so the handler never matches.
-        # The fix is to explicitly send the signal with ReportRequest as the
-        # sender from save_model.
-        #post_save.send(sender=ReportRequest, instance=obj, created=not change)
+            ReportRequest.objects.create(
+                user=request.user,
+                first_name=form.cleaned_data.get('first_name', ''),
+                last_name=form.cleaned_data.get('last_name', ''),
+                city=form.cleaned_data.get('city', ''),
+                state=form.cleaned_data.get('state', ''),
+                postal_code=form.cleaned_data.get('postal_code', ''),
+                ssn=form.cleaned_data.get('ssn', ''),
+                ein=form.cleaned_data.get('ein', ''),
+                id_type=form.cleaned_data.get('id_type', ''),
+            )
+        else:
+            super().save_model(request, obj, form, change)
 
 
 @admin.register(ReportProxy)
