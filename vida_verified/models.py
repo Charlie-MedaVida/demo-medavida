@@ -2,6 +2,41 @@ from django.db import models
 from django.conf import settings
 
 
+class BaseCredentialStatus(models.Model):
+
+    class StatusChoices(models.TextChoices):
+        PENDING = 'PENDING', 'Pending'
+        PROCESSING = 'PROCESSING', 'Processing'
+        COMPLETE = 'COMPLETE', 'Complete'
+        FAILED = 'FAILED', 'Failed'
+
+    report = models.ForeignKey(
+        'Report',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+    status = models.CharField(
+        max_length=24,
+        choices=StatusChoices.choices,
+        default=StatusChoices.PENDING,
+    )
+    json_content = models.TextField(blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
+class NpiCredentialStatus(BaseCredentialStatus):
+    npi_number = models.CharField(max_length=10, blank=True, default='')
+
+
+class DcdCredentialStatus(BaseCredentialStatus):
+    dea_number = models.CharField(max_length=9, blank=True, default='')
+
+
 class ReportRequest(models.Model):
 
     class StatusChoices(models.TextChoices):

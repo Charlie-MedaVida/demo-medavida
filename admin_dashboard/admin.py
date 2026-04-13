@@ -36,4 +36,5 @@ class ReportRequestAdmin(admin.ModelAdmin):
 
 @admin.register(ReportProxy)
 class ReportAdmin(admin.ModelAdmin):
-    pass
+    def has_add_permission(self, request):
+        return False
