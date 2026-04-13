@@ -146,6 +146,15 @@ STATIC_URL = 'static/'
 # HEROKU
 IS_HEROKU_APP = "DYNO" in os.environ and "CI" not in os.environ
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.2/howto/static-files/
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 if IS_HEROKU_APP:
     REDIS_URL = os.environ.get('REDIS_URL')
     DATABASES = {
