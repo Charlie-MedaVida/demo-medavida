@@ -1,5 +1,6 @@
 #!/bin/bash
 python manage.py migrate --noinput
+python manage.py collectstatic --noinput
 
 export DJANGO_SUPERUSER_USERNAME=admin
 export DJANGO_SUPERUSER_EMAIL=admin@example.com
