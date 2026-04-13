@@ -6,5 +6,6 @@ from .tasks import async_run_report
 
 
 @receiver(post_save, sender=ReportRequest)
-def on_report_request_saved(sender, instance, **kwargs):
-    async_run_report.delay(instance.pk)
+def on_report_request_saved(sender, instance, created, **kwargs):
+    if created:
+        async_run_report.delay(instance.pk)
