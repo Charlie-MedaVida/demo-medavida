@@ -7,4 +7,3 @@ export DJANGO_SUPERUSER_PASSWORD=your_secure_password
 
 python manage.py create_admin_user
 python manage.py create_api_keys_for_all
-python manage.py download_gmail_tokens_file

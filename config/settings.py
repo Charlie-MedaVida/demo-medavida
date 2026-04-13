@@ -53,6 +53,11 @@ INSTALLED_APPS = [
     'vida_verified.apps.VidaVerifiedConfig',
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
+]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -231,3 +236,8 @@ STORAGES = {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     }
 }
+
+
+# ------------------------------------------------------------------------------
+# Stripe
+STRIPE_TEST_SECRET_KEY = None
