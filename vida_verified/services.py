@@ -1,0 +1,87 @@
+import json
+import logging
+
+import boto3
+from botocore.exceptions import BotoCoreError, ClientError
+
+logger = logging.getLogger(__name__)
+
+_API_CRAWLER_FUNCTION = 'medavida-api-crawler'
+_CRAWLER_FUNCTION = 'medavida-crawler'
+
+
+def _invoke_lambda(function_name: str, payload: dict) -> dict:
+    """Shared low-level helper — invokes a Lambda and returns the parsed response."""
+    client = boto3.client('lambda')
+
+    try:
+        response = client.invoke(
+            FunctionName=function_name,
+            InvocationType='RequestResponse',
+            Payload=json.dumps(payload).encode('utf-8'),
+        )
+    except (BotoCoreError, ClientError) as exc:
+        logger.exception('Failed to invoke Lambda function %s', function_name)
+        raise RuntimeError(f'Lambda invocation failed: {exc}') from exc
+
+    # Function-level errors are surfaced via FunctionError, not HTTP status.
+    if response.get('FunctionError'):
+        raw = response['Payload'].read().decode('utf-8')
+        logger.error(
+            'Lambda %s returned a function error: %s', function_name, raw
+        )
+        raise RuntimeError(
+            f'Lambda function error from {function_name}: {raw}'
+        )
+
+    return json.loads(response['Payload'].read().decode('utf-8'))
+
+
+def invoke_api_crawler(crawler: str, params: dict | None = None) -> dict:
+    """
+    Invoke the medavida-api-crawler Lambda function.
+
+    Args:
+        crawler: Dotted module path of the crawler to run
+                 (e.g. "npi_registry.search_api_v2_1").
+        params:  Optional dict of parameters forwarded to the crawler's
+                 run() function.
+
+    Returns:
+        The parsed JSON response from the Lambda, in the shape:
+            {"crawler": <str>, "result": <dict>}
+    """
+    payload = {'crawler': crawler, 'params': params or {}}
+    result = _invoke_lambda(_API_CRAWLER_FUNCTION, payload)
+    logger.info(
+        'Lambda %s completed. crawler=%s', _API_CRAWLER_FUNCTION, crawler
+    )
+    return result
+
+
+def invoke_crawler(
+    platform: str, bot: str, **kwargs
+) -> dict:
+    """
+    Invoke the medavida-crawler Lambda function.
+
+    Args:
+        platform: The target platform/website sub-package to load
+                  (e.g. "dea", "npi").
+        bot:      The scraper module within that platform to run
+                  (e.g. "dea_health_check_scraper").
+        **kwargs: Any additional keyword arguments forwarded directly to
+                  the scraper's run() classmethod.
+
+    Returns:
+        The parsed JSON response returned by the scraper's run() method.
+    """
+    payload = {'platform': platform, 'bot': bot, **kwargs}
+    result = _invoke_lambda(_CRAWLER_FUNCTION, payload)
+    logger.info(
+        'Lambda %s completed. platform=%s bot=%s',
+        _CRAWLER_FUNCTION,
+        platform,
+        bot,
+    )
+    return result
