@@ -1,11 +1,11 @@
 from django import forms
 
-from .models import ReportRequestProxy
+from vida_verified.models import ReportRequest
 
 
 class ReportRequestAddForm(forms.ModelForm):
     class Meta:
-        model = ReportRequestProxy
+        model = ReportRequest
         fields = [
             'first_name',
             'last_name',
@@ -23,10 +23,10 @@ class ReportRequestAddForm(forms.ModelForm):
 
 class ReportRequestChangeForm(forms.ModelForm):
     class Meta:
-        model = ReportRequestProxy
+        model = ReportRequest
         fields = ['user', 'status']
         widgets = {
             'status': forms.Select(
-                choices=ReportRequestProxy.StatusChoices.choices
+                choices=ReportRequest.StatusChoices.choices
             ),
         }

@@ -1,14 +1,13 @@
 from django.contrib import admin
 from rest_framework_api_key.models import APIKey
-from vida_verified.models import ReportRequest
+from vida_verified.models import Report, ReportRequest
 
 from .forms import ReportRequestAddForm, ReportRequestChangeForm
-from .models import ReportProxy, ReportRequestProxy
 
 admin.site.unregister(APIKey)
 
 
-@admin.register(ReportRequestProxy)
+@admin.register(ReportRequest)
 class ReportRequestAdmin(admin.ModelAdmin):
 
     add_fieldsets = (
@@ -54,7 +53,7 @@ class ReportRequestAdmin(admin.ModelAdmin):
             super().save_model(request, obj, form, change)
 
 
-@admin.register(ReportProxy)
+@admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
