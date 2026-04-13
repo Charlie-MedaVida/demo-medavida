@@ -14,6 +14,8 @@ class ReportRequestAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not (self.instance and self.instance.pk):
+            self.fields.pop('user')
+            self.fields.pop('status')
             self.fields['first_name'] = forms.CharField(max_length=150, required=False)
             self.fields['last_name'] = forms.CharField(max_length=150, required=False)
             self.fields['city'] = forms.CharField(max_length=100, required=False)
