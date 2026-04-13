@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'guardian',
     'admin_extra_buttons',
     # Local apps
+    'admin_dashboard.apps.AdminDashboardConfig',
     'core.apps.CoreMonetizationConfig',
     'vida_verified.apps.VidaVerifiedConfig',
 ]
@@ -215,7 +216,11 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 
-CORS_ALLOW_HEADERS = (*default_headers, 'x-pm-id', "x-pm-node-id")
+CORS_ALLOW_HEADERS = (
+    *default_headers,
+    'x-pm-id',
+    'x-pm-node-id',
+)
 CORS_ALLOW_PRIVATE_NETWORK = os.getenv('CORS_ALLOW_PRIVATE_NETWORK', default="False") == "True"
 
 
