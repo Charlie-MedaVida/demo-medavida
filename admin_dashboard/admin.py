@@ -33,6 +33,11 @@ class ReportRequestAdmin(admin.ModelAdmin):
             return self.add_fieldsets
         return super().get_fieldsets(request, obj)
 
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.user = request.user
+        super().save_model(request, obj, form, change)
+
 
 @admin.register(ReportProxy)
 class ReportAdmin(admin.ModelAdmin):
