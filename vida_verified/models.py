@@ -28,9 +28,6 @@ class ReportRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f'ReportRequest {self.pk} ({self.status}) — {self.user}'
-
 
 class Report(models.Model):
 
@@ -41,6 +38,3 @@ class Report(models.Model):
     )
     content = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f'Report for ReportRequest {self.request_id}'
