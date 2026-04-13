@@ -10,6 +10,10 @@ class ReportRequest(models.Model):
         COMPLETE = 'COMPLETE', 'Complete'
         FAILED = 'FAILED', 'Failed'
 
+    class IdTypeChoices(models.TextChoices):
+        SSN = 'SSN', 'SSN'
+        EIN = 'EIN', 'EIN'
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -20,6 +24,14 @@ class ReportRequest(models.Model):
     city = models.CharField(max_length=100, blank=True, default='')
     state = models.CharField(max_length=100, blank=True, default='')
     postal_code = models.CharField(max_length=20, blank=True, default='')
+    ssn = models.CharField(max_length=11, blank=True, default='')
+    ein = models.CharField(max_length=10, blank=True, default='')
+    id_type = models.CharField(
+        max_length=3,
+        choices=IdTypeChoices.choices,
+        blank=True,
+        default='',
+    )
     status = models.CharField(
         max_length=24,
         choices=StatusChoices.choices,

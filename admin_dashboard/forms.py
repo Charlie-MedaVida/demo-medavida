@@ -12,7 +12,13 @@ class ReportRequestAddForm(forms.ModelForm):
             'city',
             'state',
             'postal_code',
+            'ssn',
+            'ein',
+            'id_type',
         ]
+
+    class Media:
+        js = ('admin/js/report_request_form.js',)
 
 
 class ReportRequestChangeForm(forms.ModelForm):
