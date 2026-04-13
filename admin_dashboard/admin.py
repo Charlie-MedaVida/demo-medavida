@@ -47,7 +47,7 @@ class ReportRequestAdmin(admin.ModelAdmin):
         # post_save with the proxy as sender, so the handler never matches.
         # The fix is to explicitly send the signal with ReportRequest as the
         # sender from save_model.
-        post_save.send(sender=ReportRequest, instance=obj, created=not change)
+        #post_save.send(sender=ReportRequest, instance=obj, created=not change)
 
 
 @admin.register(ReportProxy)
