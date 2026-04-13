@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Third-party apps
     'corsheaders',
+    'django_celery_beat',
+    'django_celery_results',
     'rest_framework',
     'rest_framework_api_key',
     'guardian',
@@ -221,7 +223,9 @@ CORS_ALLOW_HEADERS = (
     'x-pm-id',
     'x-pm-node-id',
 )
-CORS_ALLOW_PRIVATE_NETWORK = os.getenv('CORS_ALLOW_PRIVATE_NETWORK', default="False") == "True"
+CORS_ALLOW_PRIVATE_NETWORK = (
+    os.getenv('CORS_ALLOW_PRIVATE_NETWORK', default="False") == "True"
+)
 
 
 # ------------------------------------------------------------------------------
