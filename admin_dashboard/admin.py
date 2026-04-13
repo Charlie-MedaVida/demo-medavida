@@ -2,7 +2,7 @@ from django.contrib import admin
 from rest_framework_api_key.models import APIKey
 from vida_verified.models import Report, ReportRequest
 
-from .forms import ReportRequestAddForm, ReportRequestChangeForm
+from .forms import ReportChangeForm, ReportRequestAddForm, ReportRequestChangeForm
 
 admin.site.unregister(APIKey)
 
@@ -55,5 +55,7 @@ class ReportRequestAdmin(admin.ModelAdmin):
 
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
+    form = ReportChangeForm
+
     def has_add_permission(self, request):
         return False
