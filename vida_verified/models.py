@@ -15,6 +15,11 @@ class ReportRequest(models.Model):
         on_delete=models.CASCADE,
         related_name='report_requests',
     )
+    first_name = models.CharField(max_length=150, blank=True, default='')
+    last_name = models.CharField(max_length=150, blank=True, default='')
+    city = models.CharField(max_length=100, blank=True, default='')
+    state = models.CharField(max_length=100, blank=True, default='')
+    postal_code = models.CharField(max_length=20, blank=True, default='')
     status = models.CharField(
         max_length=24,
         choices=StatusChoices.choices,
