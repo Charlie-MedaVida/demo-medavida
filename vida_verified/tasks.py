@@ -31,6 +31,7 @@ def async_run_report(report_request_pk):
         'ssn': report_request.ssn,
         'ein': report_request.ein,
         'id_type': report_request.id_type,
+        "s3_bucket": "vidaverified-datalake",
     }
     api_response = invoke_api_crawler(crawler, params)
     npi_status.json_content = json.dumps(api_response)
