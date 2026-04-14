@@ -1,8 +1,12 @@
 from django.contrib import admin
 from rest_framework_api_key.models import APIKey
-from vida_verified.models import Report, ReportRequest
+from vida_verified.models import ReportResults, ReportRequest
 
-from .forms import ReportChangeForm, ReportRequestAddForm, ReportRequestChangeForm
+from .forms import (
+    ReportChangeForm,
+    ReportRequestAddForm,
+    ReportRequestChangeForm,
+)
 
 admin.site.unregister(APIKey)
 
@@ -53,7 +57,7 @@ class ReportRequestAdmin(admin.ModelAdmin):
             super().save_model(request, obj, form, change)
 
 
-@admin.register(Report)
+@admin.register(ReportResults)
 class ReportAdmin(admin.ModelAdmin):
     form = ReportChangeForm
 

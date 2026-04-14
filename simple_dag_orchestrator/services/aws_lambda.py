@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 _API_CRAWLER_FUNCTION = 'medavida-api-crawler'
 _CRAWLER_FUNCTION = 'medavida-crawler'
+_ETLS_FUNCTION = 'medavida-etls'
 REGION_NAME = 'us-east-2'
 
 
@@ -63,6 +64,49 @@ def invoke_api_crawler(crawler: str, params: dict | None = None) -> dict:
         'Lambda %s completed. crawler=%s', _API_CRAWLER_FUNCTION, crawler
     )
     return result
+
+
+def invoke_etls(etl: str, params: dict | None = None) -> dict:
+    """
+    Invoke the medavida-etls Lambda function.
+
+    Args:
+        etl:    Dotted module path of the ETL to run.
+        params: Optional dict of parameters forwarded to the ETL's
+                run() function.
+
+    Returns:
+        The parsed JSON response from the Lambda.
+    """
+    payload = {'etl': etl, 'params': params or {}}
+    result = _invoke_lambda(_ETLS_FUNCTION, payload)
+    logger.info('Lambda %s completed. etl=%s', _ETLS_FUNCTION, etl)
+    return result
+
+
+def invoke_npi_registry_search(uuid: str, source_key: str) -> dict:
+    return invoke_etls(
+        etl='npi_registry_search',
+        params={'uuid': uuid, 'source_key': source_key},
+    )
+
+
+def invoke_sam_exclusions_search(uuid: str, source_key: str) -> dict:
+    return invoke_etls(
+        etl='sam_exclusions_search',
+        params={'uuid': uuid, 'source_key': source_key},
+    )
+
+
+def invoke_load_credential_report(uuid: str, source_key: str) -> dict:
+    return invoke_etls(
+        etl='load_credential_report',
+        params={'uuid': uuid, 'source_key': source_key},
+    )
+
+
+def invoke_load_credential_monitors() -> dict:
+    return invoke_etls(etl='load_credential_monitors')
 
 
 def invoke_crawler(

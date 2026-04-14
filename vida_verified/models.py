@@ -1,43 +1,8 @@
 from django.db import models
-from django.conf import settings
+from django_materialized_view.base_model import MaterializedViewModel
 
 
-class BaseCredentialStatus(models.Model):
-
-    class StatusChoices(models.TextChoices):
-        PENDING = 'PENDING', 'Pending'
-        PROCESSING = 'PROCESSING', 'Processing'
-        COMPLETE = 'COMPLETE', 'Complete'
-        FAILED = 'FAILED', 'Failed'
-
-    report = models.ForeignKey(
-        'Report',
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-    )
-    status = models.CharField(
-        max_length=24,
-        choices=StatusChoices.choices,
-        default=StatusChoices.PENDING,
-    )
-    json_content = models.TextField(blank=True, default='')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        abstract = True
-
-
-class NpiCredentialStatus(BaseCredentialStatus):
-    npi_number = models.CharField(max_length=10, blank=True, default='')
-
-
-class DcdCredentialStatus(BaseCredentialStatus):
-    dea_number = models.CharField(max_length=9, blank=True, default='')
-
-
-class ReportRequest(models.Model):
+class BaseRequest(models.Model):
 
     class StatusChoices(models.TextChoices):
         PENDING = 'PENDING', 'Pending'
@@ -49,11 +14,6 @@ class ReportRequest(models.Model):
         SSN = 'SSN', 'SSN'
         EIN = 'EIN', 'EIN'
 
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='report_requests',
-    )
     first_name = models.CharField(max_length=150, blank=True, default='')
     last_name = models.CharField(max_length=150, blank=True, default='')
     city = models.CharField(max_length=100, blank=True, default='')
@@ -75,13 +35,126 @@ class ReportRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        abstract = True
 
-class Report(models.Model):
 
-    request = models.OneToOneField(
-        ReportRequest,
-        on_delete=models.CASCADE,
-        related_name='report',
-    )
-    content = models.TextField(blank=True, null=True)
+class MonitorRequest(BaseRequest):
+    pass
+
+
+class ReportRequest(BaseRequest):
+    pass
+
+
+class BaseResults(models.Model):
+
+    request_id = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    result = models.CharField(max_length=24)
+
+    class Meta:
+        abstract = True
+
+
+class ReportResults(BaseResults):
+
+    content = models.TextField(blank=True, null=True)
+
+
+class MonitorResults(BaseResults):
+
+    content = models.TextField(blank=True, null=True)
+
+
+class MonitorResultsView(MaterializedViewModel):
+    create_pkey_index = True
+
+    monitor_results_id = models.IntegerField(primary_key=True)
+    content = models.TextField(blank=True, null=True)
+    result = models.CharField(max_length=24, blank=True)
+    results_created_at = models.DateTimeField()
+    results_updated_at = models.DateTimeField()
+    request_id = models.IntegerField()
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=20)
+    ssn = models.CharField(max_length=11)
+    ein = models.CharField(max_length=10)
+    id_type = models.CharField(max_length=3)
+    status = models.CharField(max_length=24)
+    request_created_at = models.DateTimeField()
+    request_updated_at = models.DateTimeField()
+
+    class Meta:
+        managed = False
+
+    @staticmethod
+    def get_query_from_queryset():
+        return MonitorResults.objects.select_related('request').values(
+            monitor_results_id=models.F('id'),
+            content=models.F('content'),
+            result=models.F('result'),
+            results_created_at=models.F('created_at'),
+            results_updated_at=models.F('updated_at'),
+            request_id=models.F('request__id'),
+            first_name=models.F('request__first_name'),
+            last_name=models.F('request__last_name'),
+            city=models.F('request__city'),
+            state=models.F('request__state'),
+            postal_code=models.F('request__postal_code'),
+            ssn=models.F('request__ssn'),
+            ein=models.F('request__ein'),
+            id_type=models.F('request__id_type'),
+            status=models.F('request__status'),
+            request_created_at=models.F('request__created_at'),
+            request_updated_at=models.F('request__updated_at'),
+        )
+
+
+class ReportResultsView(MaterializedViewModel):
+    create_pkey_index = True
+
+    report_results_id = models.IntegerField(primary_key=True)
+    content = models.TextField(blank=True, null=True)
+    result = models.CharField(max_length=24, blank=True)
+    results_created_at = models.DateTimeField()
+    request_id = models.IntegerField()
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=20)
+    ssn = models.CharField(max_length=11)
+    ein = models.CharField(max_length=10)
+    id_type = models.CharField(max_length=3)
+    status = models.CharField(max_length=24)
+    request_created_at = models.DateTimeField()
+    request_updated_at = models.DateTimeField()
+
+    class Meta:
+        managed = False
+
+    @staticmethod
+    def get_query_from_queryset():
+        return ReportResults.objects.select_related('request').values(
+            report_results_id=models.F('id'),
+            content=models.F('content'),
+            result=models.F('result'),
+            results_created_at=models.F('created_at'),
+            request_id=models.F('request__id'),
+            first_name=models.F('request__first_name'),
+            last_name=models.F('request__last_name'),
+            city=models.F('request__city'),
+            state=models.F('request__state'),
+            postal_code=models.F('request__postal_code'),
+            ssn=models.F('request__ssn'),
+            ein=models.F('request__ein'),
+            id_type=models.F('request__id_type'),
+            status=models.F('request__status'),
+            request_created_at=models.F('request__created_at'),
+            request_updated_at=models.F('request__updated_at'),
+        )

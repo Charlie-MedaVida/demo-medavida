@@ -12,6 +12,7 @@ click-plugins==1.1.1.2
 click-repl==0.3.0
 dj-database-url==3.1.2
 Django==6.0.4
+django-materialized-view==0.1.6.2
 django-admin-extra-buttons==2.1.2
 django-celery-beat==2.9.0
 django-celery-results==2.6.0
