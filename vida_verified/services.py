@@ -1,18 +1,24 @@
+import boto3
 import json
 import logging
-
-import boto3
 from botocore.exceptions import BotoCoreError, ClientError
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
 _API_CRAWLER_FUNCTION = 'medavida-api-crawler'
 _CRAWLER_FUNCTION = 'medavida-crawler'
+REGION_NAME = 'us-east-2'
 
 
 def _invoke_lambda(function_name: str, payload: dict) -> dict:
     """Shared low-level helper — invokes a Lambda and returns the parsed response."""
-    client = boto3.client('lambda')
+    client = boto3.client(
+        'lambda',
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        region_name=REGION_NAME,
+    )
 
     try:
         response = client.invoke(
