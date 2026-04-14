@@ -113,8 +113,8 @@ def invoke_load_credential_report(uuid: str, source_key: str) -> dict:
     )
 
 
-def invoke_load_credential_monitors() -> dict:
-    return invoke_etls(etl='load_credential_monitors')
+def invoke_load_monitor_results() -> dict:
+    return invoke_etls(etl='load_monitor_results')
 
 
 def invoke_crawler(

@@ -5,7 +5,8 @@ from simple_dag_orchestrator.services.aws_lambda import (
     invoke_npi_registry_search_crawler,
     invoke_npi_registry_search_etl,
     invoke_sam_exclusions_search_crawler,
-    invoke_sam_exclusions_search_etl
+    invoke_sam_exclusions_search_etl,
+    invoke_load_monitor_results
 )
 
 
@@ -45,3 +46,6 @@ def run_reports_dag(report_request_id: int):
     results = invoke_sam_exclusions_search_crawler(sam_params)
     s3_key = results['result']['s3_key']
     invoke_sam_exclusions_search_etl(source_key=s3_key)
+
+    # Call the Load Function to Close the Loop
+    invoke_load_monitor_results()
