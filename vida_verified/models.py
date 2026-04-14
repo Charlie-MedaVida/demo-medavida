@@ -6,6 +6,7 @@ class BaseRequest(models.Model):
 
     class StatusChoices(models.TextChoices):
         PENDING = 'PENDING', 'Pending'
+        RUNNING = 'RUNNING', 'Running'
         PROCESSING = 'PROCESSING', 'Processing'
         COMPLETE = 'COMPLETE', 'Complete'
         FAILED = 'FAILED', 'Failed'

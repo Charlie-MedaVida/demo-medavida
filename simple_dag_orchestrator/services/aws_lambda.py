@@ -84,14 +84,22 @@ def invoke_etls(etl: str, params: dict | None = None) -> dict:
     return result
 
 
-def invoke_npi_registry_search(uuid: str, source_key: str) -> dict:
+def invoke_npi_registry_search_crawler(params: list[dict]) -> dict:
+    return invoke_api_crawler('npi_registry.search_api_v2_1', params)
+
+
+def invoke_sam_exclusions_search_crawler(params: list[dict]) -> dict:
+    return invoke_api_crawler('sam_exclusions.search', params)
+
+
+def invoke_npi_registry_search_etl(source_key: str) -> dict:
     return invoke_etls(
         etl='npi_registry_search',
-        params={'uuid': uuid, 'source_key': source_key},
+        params={'source_key': source_key},
     )
 
 
-def invoke_sam_exclusions_search(uuid: str, source_key: str) -> dict:
+def invoke_sam_exclusions_search_etl(uuid: str, source_key: str) -> dict:
     return invoke_etls(
         etl='sam_exclusions_search',
         params={'uuid': uuid, 'source_key': source_key},
