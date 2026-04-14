@@ -1,8 +1,12 @@
 from django.contrib import admin
 from rest_framework_api_key.models import APIKey
-from vida_verified.models import ReportResults, ReportRequest
+
+from vida_verified.models import MonitorRequest, MonitorResults, ReportRequest, ReportResults
 
 from .forms import (
+    MonitorRequestAddForm,
+    MonitorRequestChangeForm,
+    MonitorResultsChangeForm,
     ReportChangeForm,
     ReportRequestAddForm,
     ReportRequestChangeForm,
@@ -11,8 +15,9 @@ from .forms import (
 admin.site.unregister(APIKey)
 
 
-@admin.register(ReportRequest)
-class ReportRequestAdmin(admin.ModelAdmin):
+class BaseRequestAdmin(admin.ModelAdmin):
+    add_form_class = None
+    change_form_class = None
 
     add_fieldsets = (
         (None, {
@@ -29,10 +34,7 @@ class ReportRequestAdmin(admin.ModelAdmin):
     )
 
     def get_form(self, request, obj=None, **kwargs):
-        if obj is None:
-            kwargs['form'] = ReportRequestAddForm
-        else:
-            kwargs['form'] = ReportRequestChangeForm
+        kwargs['form'] = self.add_form_class if obj is None else self.change_form_class
         return super().get_form(request, obj, **kwargs)
 
     def get_fieldsets(self, request, obj=None):
@@ -40,26 +42,29 @@ class ReportRequestAdmin(admin.ModelAdmin):
             return self.add_fieldsets
         return super().get_fieldsets(request, obj)
 
-    def save_model(self, request, obj, form, change):
-        if not change:
-            ReportRequest.objects.create(
-                user=request.user,
-                first_name=form.cleaned_data.get('first_name', ''),
-                last_name=form.cleaned_data.get('last_name', ''),
-                city=form.cleaned_data.get('city', ''),
-                state=form.cleaned_data.get('state', ''),
-                postal_code=form.cleaned_data.get('postal_code', ''),
-                ssn=form.cleaned_data.get('ssn', ''),
-                ein=form.cleaned_data.get('ein', ''),
-                id_type=form.cleaned_data.get('id_type', ''),
-            )
-        else:
-            super().save_model(request, obj, form, change)
+
+class BaseResultsAdmin(admin.ModelAdmin):
+    def has_add_permission(self, request):
+        return False
+
+
+@admin.register(ReportRequest)
+class ReportRequestAdmin(BaseRequestAdmin):
+    add_form_class = ReportRequestAddForm
+    change_form_class = ReportRequestChangeForm
+
+
+@admin.register(MonitorRequest)
+class MonitorRequestAdmin(BaseRequestAdmin):
+    add_form_class = MonitorRequestAddForm
+    change_form_class = MonitorRequestChangeForm
 
 
 @admin.register(ReportResults)
-class ReportAdmin(admin.ModelAdmin):
+class ReportResultsAdmin(BaseResultsAdmin):
     form = ReportChangeForm
 
-    def has_add_permission(self, request):
-        return False
+
+@admin.register(MonitorResults)
+class MonitorResultsAdmin(BaseResultsAdmin):
+    form = MonitorResultsChangeForm
