@@ -27,14 +27,14 @@ def run_reports_dag(report_request_id: int):
     logger.info('ReportRequest %s status updated to RUNNING', report_request_id) # noqa
 
     # NPI Registrations
-    params = [{
+    params = {
         'first_name': report_request.first_name,
         'last_name': report_request.last_name,
         'city': report_request.city,
         'state': report_request.state,
         'postal_code': report_request.postal_code,
         's3_bucket': 'vidaverified--raw-document-data',
-    }]
+    }
     logger.info('Invoking NPI registry search crawler. record_count=%s', len(params)) # noqa
     results = invoke_npi_registry_search_crawler(params)
     s3_key = results['result']['s3_key']
@@ -47,11 +47,11 @@ def run_reports_dag(report_request_id: int):
     logger.info('NPI registry search ETL complete.')
 
     # SAM Registrations
-    sam_params = [{
+    sam_params = {
         'exclusionName': f'{report_request.first_name} {report_request.last_name}', # noqa
         'classification': 'Individual',
         's3_bucket': 'vidaverified--raw-document-data',
-    }]
+    }
     logger.info('Invoking SAM exclusions search crawler. record_count=%s', len(sam_params)) # noqa
     results = invoke_sam_exclusions_search_crawler(sam_params)
     s3_key = results['result']['s3_key']
