@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'admin_dashboard.apps.AdminDashboardConfig',
     'core.apps.CoreMonetizationConfig',
     'vida_verified.apps.VidaVerifiedConfig',
+    'simple_dag_orchestrator.apps.SimpleDagOrchestratorConfig',
 ]
 
 AUTHENTICATION_BACKENDS = [
