@@ -1,0 +1,635 @@
+openapi: 3.0.3
+
+info:
+  title: MedaVida API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8000
+    description: Local development
+
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    # ── Auth ──────────────────────────────────────────────────────────────────
+
+    SignupRequest:
+      type: object
+      required: [email, password, firstName, lastName]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        firstName:
+          type: string
+        lastName:
+          type: string
+
+    SigninRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    TokenResponse:
+      type: object
+      properties:
+        access:
+          type: string
+        refresh:
+          type: string
+
+    SignoutRequest:
+      type: object
+      required: [refresh]
+      properties:
+        refresh:
+          type: string
+
+    # ── User ─────────────────────────────────────────────────────────────────
+
+    Profile:
+      type: object
+      properties:
+        credit_count:
+          type: integer
+
+    UserAPIKey:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        key:
+          type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+        profile:
+          $ref: '#/components/schemas/Profile'
+        api_keys:
+          $ref: '#/components/schemas/UserAPIKey'
+
+    UserUpdateRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+
+    UserDeleteRequest:
+      type: object
+      required: [password]
+      properties:
+        password:
+          type: string
+          format: password
+
+    # ── Report Requests ───────────────────────────────────────────────────────
+
+    ReportRequestStatus:
+      type: string
+      enum: [PENDING, RUNNING, PROCESSING, COMPLETE, FAILED]
+
+    ReportRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        city:
+          type: string
+          maxLength: 100
+        state:
+          type: string
+          maxLength: 100
+        postal_code:
+          type: string
+          maxLength: 20
+        ssn:
+          type: string
+          maxLength: 11
+        ein:
+          type: string
+          maxLength: 10
+        id_type:
+          type: string
+          enum: [SSN, EIN]
+        status:
+          $ref: '#/components/schemas/ReportRequestStatus'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+
+    ReportRequestCreateRequest:
+      type: object
+      required: [first_name, last_name, id_type]
+      properties:
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        city:
+          type: string
+          maxLength: 100
+        state:
+          type: string
+          maxLength: 100
+        postal_code:
+          type: string
+          maxLength: 20
+        ssn:
+          type: string
+          maxLength: 11
+        ein:
+          type: string
+          maxLength: 10
+        id_type:
+          type: string
+          enum: [SSN, EIN]
+
+    # ── Products ──────────────────────────────────────────────────────────────
+
+    StripePrice:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        lookup_key:
+          type: string
+
+    # ── Checkout ─────────────────────────────────────────────────────────────
+
+    CreateCheckoutRequest:
+      type: object
+      required: [lookup_key]
+      properties:
+        lookup_key:
+          type: string
+
+    CreateCheckoutResponse:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        url:
+          type: string
+          format: uri
+
+    CheckoutStatusResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        customer_email:
+          type: string
+          format: email
+
+    # ── Errors ────────────────────────────────────────────────────────────────
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+
+paths:
+
+  # ── Auth ───────────────────────────────────────────────────────────────────
+
+  /api/v1/auth/signup:
+    post:
+      tags: [Auth]
+      summary: Create a new user account
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '201':
+          description: Account created — returns JWT tokens
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/auth/signin:
+    post:
+      tags: [Auth]
+      summary: Sign in and receive JWT tokens
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SigninRequest'
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/auth/signout:
+    post:
+      tags: [Auth]
+      summary: Sign out and blacklist the refresh token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignoutRequest'
+      responses:
+        '201':
+          description: Signed out successfully
+
+  # ── Users ──────────────────────────────────────────────────────────────────
+
+  /api/v1/users/me:
+    get:
+      tags: [Users]
+      summary: Retrieve the authenticated user's profile
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+
+    patch:
+      tags: [Users]
+      summary: Update the authenticated user's profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        '200':
+          description: Updated user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+
+    delete:
+      tags: [Users]
+      summary: Delete the authenticated user's account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDeleteRequest'
+      responses:
+        '204':
+          description: Account deleted
+        '400':
+          description: Incorrect password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+
+  /api/v1/users/me/dashboard:
+    get:
+      tags: [Users]
+      summary: Retrieve the authenticated user's dashboard data
+      responses:
+        '200':
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+
+  # ── Report Requests ────────────────────────────────────────────────────────
+
+  /api/v1/report-requests/:
+    get:
+      tags: [Report Requests]
+      summary: List all report requests
+      responses:
+        '200':
+          description: List of report requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReportRequest'
+        '401':
+          description: Unauthorized
+
+    post:
+      tags: [Report Requests]
+      summary: Create a new report request
+      description: >
+        Creates a report request and asynchronously triggers the
+        run_reports_dag Celery task via the post_save signal.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportRequestCreateRequest'
+      responses:
+        '201':
+          description: Report request created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportRequest'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+
+  /api/v1/report-requests/{id}/:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    get:
+      tags: [Report Requests]
+      summary: Retrieve a report request
+      responses:
+        '200':
+          description: Report request detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportRequest'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+    patch:
+      tags: [Report Requests]
+      summary: Partially update a report request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportRequestCreateRequest'
+      responses:
+        '200':
+          description: Updated report request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportRequest'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+    delete:
+      tags: [Report Requests]
+      summary: Delete a report request
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+  # ── Products ───────────────────────────────────────────────────────────────
+
+  /api/v1/products/:
+    get:
+      tags: [Products]
+      summary: List available subscription pricing plans
+      responses:
+        '200':
+          description: List of Stripe prices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StripePrice'
+        '401':
+          description: Unauthorized
+
+  # ── Checkout ───────────────────────────────────────────────────────────────
+
+  /api/v1/checkout/create-checkout-session:
+    post:
+      tags: [Checkout]
+      summary: Create a Stripe checkout session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCheckoutRequest'
+      responses:
+        '200':
+          description: Checkout session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCheckoutResponse'
+        '400':
+          description: Stripe error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+
+  /api/v1/checkout/session-status:
+    get:
+      tags: [Checkout]
+      summary: Retrieve the status of a Stripe checkout session
+      parameters:
+        - name: session_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Checkout session status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutStatusResponse'
+        '401':
+          description: Unauthorized
+
+  /api/v1/checkout/session-status/webhook:
+    post:
+      tags: [Checkout]
+      summary: Stripe webhook receiver
+      description: >
+        Handles `checkout.session.completed` and
+        `checkout.session.async_payment_succeeded` events to activate
+        user subscriptions. Endpoint is public — Stripe signature
+        verification is performed server-side.
+      security: []
+      parameters:
+        - name: stripe-signature
+          in: header
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Raw Stripe event payload
+      responses:
+        '200':
+          description: Event processed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        '400':
+          description: Invalid payload or signature verification failed
+
+  # ── API Keys ───────────────────────────────────────────────────────────────
+
+  /api/v1/api-keys/:
+    get:
+      tags: [API Keys]
+      summary: Retrieve the authenticated user's API key
+      responses:
+        '200':
+          description: API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAPIKey'
+        '401':
+          description: Unauthorized
+
+    patch:
+      tags: [API Keys]
+      summary: Update the authenticated user's API key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAPIKey'
+      responses:
+        '200':
+          description: Updated API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAPIKey'
+        '401':
+          description: Unauthorized

@@ -11,10 +11,7 @@ class ReportRequestListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return ReportRequest.objects.filter(user=self.request.user)
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        return ReportRequest.objects.all()
 
 
 class ReportRequestRetrieveUpdateDestroyView(
@@ -25,4 +22,4 @@ class ReportRequestRetrieveUpdateDestroyView(
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return ReportRequest.objects.filter(user=self.request.user)
+        return ReportRequest.objects.all()
