@@ -61,10 +61,8 @@ class ReportRequest(BaseRequest):
 class BaseResults(models.Model):
 
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    request_id = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    result = models.CharField(max_length=24)
     sam_exclusions_results = models.TextField(blank=True, null=True)
     npi_registration_results = models.TextField(blank=True, null=True)
 
