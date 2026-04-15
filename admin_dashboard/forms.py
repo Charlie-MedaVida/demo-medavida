@@ -67,7 +67,7 @@ class MonitorRequestChangeForm(forms.ModelForm):
 class ReportChangeForm(forms.ModelForm):
     class Meta:
         model = ReportResults
-        fields = []
+        fields = ['sam_exclusions_results', 'npi_registration_results']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -78,7 +78,7 @@ class ReportChangeForm(forms.ModelForm):
 class MonitorResultsChangeForm(forms.ModelForm):
     class Meta:
         model = MonitorResults
-        fields = []
+        fields = ['sam_exclusions_results', 'npi_registration_results']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

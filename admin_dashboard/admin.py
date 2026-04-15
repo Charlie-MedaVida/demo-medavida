@@ -63,8 +63,10 @@ class MonitorRequestAdmin(BaseRequestAdmin):
 @admin.register(ReportResults)
 class ReportResultsAdmin(BaseResultsAdmin):
     form = ReportChangeForm
+    readonly_fields = ('sam_exclusions_results', 'npi_registration_results')
 
 
 @admin.register(MonitorResults)
 class MonitorResultsAdmin(BaseResultsAdmin):
     form = MonitorResultsChangeForm
+    readonly_fields = ('sam_exclusions_results', 'npi_registration_results')

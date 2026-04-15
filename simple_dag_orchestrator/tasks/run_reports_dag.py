@@ -48,4 +48,4 @@ def run_reports_dag(report_request_id: int):
     invoke_sam_exclusions_search_etl(source_key=s3_key)
 
     # Call the Load Function to Close the Loop
-    invoke_load_monitor_results()
+    
