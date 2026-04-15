@@ -106,15 +106,18 @@ def invoke_sam_exclusions_search_etl(uuid: str, source_key: str) -> dict:
     )
 
 
-def invoke_load_credential_report(uuid: str, source_key: str) -> dict:
+def invoke_load_report_results(uuids: list[str]) -> dict:
     return invoke_etls(
-        etl='load_credential_report',
-        params={'uuid': uuid, 'source_key': source_key},
+        etl='load_report_results',
+        params={'uuids': uuids},
     )
 
 
-def invoke_load_monitor_results() -> dict:
-    return invoke_etls(etl='load_monitor_results')
+def invoke_load_monitor_results(uuids: list[str]) -> dict:
+    return invoke_etls(
+        etl='load_monitor_results',
+        params={'uuids': uuids},
+    )
 
 
 def invoke_crawler(
