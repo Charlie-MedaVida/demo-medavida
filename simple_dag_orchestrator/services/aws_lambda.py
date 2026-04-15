@@ -13,7 +13,8 @@ REGION_NAME = 'us-east-2'
 
 
 def _invoke_lambda(function_name: str, payload: dict) -> dict:
-    """Shared low-level helper — invokes a Lambda and returns the parsed response."""
+    """Shared low-level helper — invokes a Lambda and returns the parsed
+    response."""
     client = boto3.client(
         'lambda',
         aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
@@ -92,10 +93,10 @@ def invoke_sam_exclusions_search_crawler(params: list[dict]) -> dict:
     return invoke_api_crawler('sam_exclusions.search', params)
 
 
-def invoke_npi_registry_search_etl(source_key: str) -> dict:
+def invoke_npi_registry_search_etl(uuid: str, source_key: str) -> dict:
     return invoke_etls(
         etl='npi_registry_search',
-        params={'source_key': source_key},
+        params={'uuid': uuid, 'source_key': source_key},
     )
 
 
