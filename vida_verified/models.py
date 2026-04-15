@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django_materialized_view.base_model import MaterializedViewModel
 
@@ -15,6 +17,7 @@ class BaseRequest(models.Model):
         SSN = 'SSN', 'SSN'
         EIN = 'EIN', 'EIN'
 
+    uuid = models.UUIDField(editable=False)
     first_name = models.CharField(max_length=150, blank=True, default='')
     last_name = models.CharField(max_length=150, blank=True, default='')
     city = models.CharField(max_length=100, blank=True, default='')
@@ -36,6 +39,13 @@ class BaseRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        ssn = self.ssn or 'null'
+        ein = self.ein or 'null'
+        id_type = self.id_type or 'null'
+        self.uuid = uuid.uuid5(uuid.NAMESPACE_OID, f"{id_type}{ssn}{ein}")
+        super().save(*args, **kwargs)
+
     class Meta:
         abstract = True
 
@@ -50,6 +60,7 @@ class ReportRequest(BaseRequest):
 
 class BaseResults(models.Model):
 
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     request_id = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
