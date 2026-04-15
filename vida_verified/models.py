@@ -65,8 +65,8 @@ class BaseResults(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     result = models.CharField(max_length=24)
-    sam_exclusions = models.TextField(blank=True, null=True)
-    npi_registration = models.TextField(blank=True, null=True)
+    sam_exclusions_results = models.TextField(blank=True, null=True)
+    npi_registration_results = models.TextField(blank=True, null=True)
 
     class Meta:
         abstract = True
