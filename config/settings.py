@@ -192,13 +192,6 @@ CACHES = {
     }
 }
 
-CELERY_BEAT_SCHEDULE = {
-    'periodic-load-monitors-dag': {
-        'task': 'simple_dag_orchestrator.dags.periodic_load_monitors_dag.load_monitors_dag',
-        'schedule': 180.0,
-    },
-}
-
 CELERY_BROKER_URL = REDIS_URL
 CELERY_BROKER_POOL_LIMIT = None
 CELERY_BROKER_CONNECTION_MAX_RETRIES = None
