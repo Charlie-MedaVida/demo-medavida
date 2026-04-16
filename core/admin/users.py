@@ -7,6 +7,7 @@ class ProfileAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "user",
+        "practice",
         "credit_count",
     )
     fieldsets = (
@@ -15,6 +16,7 @@ class ProfileAdmin(admin.ModelAdmin):
                 "fields": (
                     "id",
                     "user",
+                    "practice",
                     "credit_count",
                 ),
             }
