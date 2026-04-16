@@ -255,8 +255,12 @@ STORAGES = {
 
 # ------------------------------------------------------------------------------
 # Stripe
+ENABLE_STRIPE = os.environ.get('ENABLE_STRIPE', 'False') == 'True'
+
 STRIPE_TEST_SECRET_KEY = None
 
 # ------------------------------------------------------------------------------
 # Frontend
-FRONT_END_ROOT_URL = os.environ.get('FRONT_END_ROOT_URL', 'http://localhost:3000')
+FRONT_END_ROOT_URL = os.environ.get(
+    'FRONT_END_ROOT_URL', 'http://localhost:3000'
+)

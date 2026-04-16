@@ -18,9 +18,10 @@ def user_post_save(sender, instance, created, **kwargs):
 
         Profile.objects.create(user=instance)
 
-        import stripe
-        stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
-        customer = stripe.Customer.create(
-            name=instance.username,
-            email="jennyrosen@example.com",
-        )
+        if settings.ENABLE_STRIPE:
+            import stripe
+            stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
+            customer = stripe.Customer.create(
+                name=instance.username,
+                email="jennyrosen@example.com",
+            )
