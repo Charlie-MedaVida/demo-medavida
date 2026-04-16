@@ -6,6 +6,7 @@ from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework_simplejwt.views import TokenObtainPairView
+from practices.models import Practice
 from ..serializers.auth import (
     SignupSerializer,
     OrigTokenObtainPairSerializer,
@@ -46,10 +47,20 @@ class SignUpView(generics.CreateAPIView):
                 email=serializer.initial_data['email'],
                 first_name=serializer.initial_data['firstName'],
                 last_name=serializer.initial_data['lastName'],
-            )        
-        except IntegrityError as e:
-          return Response({'message': 'Username already exists'}, 
-                          status=status.HTTP_400_BAD_REQUEST)
+            )
+        except IntegrityError:
+            return Response(
+                {'message': 'Username already exists'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        practice = Practice.objects.create(
+            name=f"{serializer.initial_data['firstName']} {serializer.initial_data['lastName']}",
+            email=serializer.initial_data['email'],
+        )
+
+        user.profile.practice = practice
+        user.profile.save()
 
         tokens = OrigTokenObtainPairSerializer(data).validate(data)
         return Response(tokens, status=status.HTTP_201_CREATED)

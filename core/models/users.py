@@ -8,6 +8,13 @@ class Profile(models.Model):
         on_delete=models.CASCADE,
         related_name='profile'
     )
+    practice = models.ForeignKey(
+        'practices.Practice',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='profiles',
+    )
     spent_credit_count = models.IntegerField(default=0)
     monthly_max_credit_count = models.IntegerField(default=0)
 

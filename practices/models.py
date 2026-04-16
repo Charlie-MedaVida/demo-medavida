@@ -5,11 +5,11 @@ from django.db import models
 
 class Practice(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=255)
-    email = models.EmailField()
-    phone_number = models.CharField(max_length=20)
-    tax_id = models.CharField(max_length=20)
-    npi_number = models.CharField(max_length=10)
+    name = models.CharField(max_length=255, blank=True, default='')
+    email = models.EmailField(blank=True, default='')
+    phone_number = models.CharField(max_length=20, blank=True, default='')
+    tax_id = models.CharField(max_length=20, blank=True, default='')
+    npi_number = models.CharField(max_length=10, blank=True, default='')
 
     def __str__(self):
         return self.name
