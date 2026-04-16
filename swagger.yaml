@@ -65,11 +65,23 @@ components:
 
     # ── User ─────────────────────────────────────────────────────────────────
 
+    PracticeRef:
+      type: object
+      description: Minimal practice reference nested inside a Profile
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+
     Profile:
       type: object
       properties:
         credit_count:
           type: integer
+        practice:
+          $ref: '#/components/schemas/PracticeRef'
+          nullable: true
 
     UserAPIKey:
       type: object
@@ -360,6 +372,10 @@ paths:
     post:
       tags: [Auth]
       summary: Create a new user account
+      description: >
+        Creates a User, a Profile, and a new Practice record seeded with
+        the user's name and email. The Practice ID is accessible via
+        the profile object returned from GET /api/v1/users/me.
       security: []
       requestBody:
         required: true
