@@ -25,8 +25,9 @@ class SignInView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         data = request.data.copy()
         data['username'] = data['email']
-        tokens = OrigTokenObtainPairSerializer(data).validate(data)
-        return Response(tokens, status=status.HTTP_200_OK)
+        serializer = OrigTokenObtainPairSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
 @permission_classes((AllowAny, ))
@@ -62,8 +63,9 @@ class SignUpView(generics.CreateAPIView):
         user.profile.practice = practice
         user.profile.save()
 
-        tokens = OrigTokenObtainPairSerializer(data).validate(data)
-        return Response(tokens, status=status.HTTP_201_CREATED)
+        token_serializer = OrigTokenObtainPairSerializer(data=data)
+        token_serializer.is_valid(raise_exception=True)
+        return Response(token_serializer.validated_data, status=status.HTTP_201_CREATED)
 
 
 @permission_classes((IsAuthenticated, ))
