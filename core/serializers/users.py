@@ -1,14 +1,24 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
+from practices.models import Practice
 from ..models.users import Profile
 from .api_keys import UserAPIKeySerializer
 
+
+class PracticeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Practice
+        fields = ('id',)
+        read_only_fields = ('id',)
+
+
 class ProfileSerializer(serializers.ModelSerializer):
+    practice = PracticeSerializer(read_only=True)
 
     class Meta:
         model = Profile
-        fields = ('credit_count',)
+        fields = ('credit_count', 'practice')
 
 
 class UserSerializer(serializers.ModelSerializer):
