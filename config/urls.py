@@ -19,5 +19,11 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/v1/auth/', include('core.urls.auth', namespace='auth')),
+    path('api/v1/users/', include('core.urls.users', namespace='users')),
+    path('api/v1/products/', include('core.urls.products', namespace='products')),
+    path('api/v1/checkout/', include('core.urls.checkout', namespace='checkout')),
+    path('api/v1/api-keys/', include('core.urls.api_keys', namespace='api_keys')),
     path('api/v1/', include('vida_verified.urls', namespace='vida_verified')),
+    path('api/v1/', include('practices.urls', namespace='practices')),
 ]
