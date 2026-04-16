@@ -238,6 +238,112 @@ components:
           type: string
           format: email
 
+    # ── Practices ─────────────────────────────────────────────────────────────
+
+    Provider:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+        phone_number:
+          type: string
+          maxLength: 20
+        title:
+          type: string
+          maxLength: 100
+        specialty:
+          type: string
+          maxLength: 255
+        practice:
+          type: string
+          format: uuid
+          description: UUID of the associated Practice
+
+    ProviderWriteRequest:
+      type: object
+      required: [first_name, last_name, email, phone_number, title, specialty, practice]
+      properties:
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+        phone_number:
+          type: string
+          maxLength: 20
+        title:
+          type: string
+          maxLength: 100
+        specialty:
+          type: string
+          maxLength: 255
+        practice:
+          type: string
+          format: uuid
+
+    Practice:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        email:
+          type: string
+          format: email
+        phone_number:
+          type: string
+          maxLength: 20
+        tax_id:
+          type: string
+          maxLength: 20
+        npi_number:
+          type: string
+          maxLength: 10
+        providers:
+          type: array
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/Provider'
+
+    PracticeWriteRequest:
+      type: object
+      required: [name, email, phone_number, tax_id, npi_number]
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        email:
+          type: string
+          format: email
+        phone_number:
+          type: string
+          maxLength: 20
+        tax_id:
+          type: string
+          maxLength: 20
+        npi_number:
+          type: string
+          maxLength: 10
+
     # ── Errors ────────────────────────────────────────────────────────────────
 
     Error:
@@ -633,3 +739,267 @@ paths:
                 $ref: '#/components/schemas/UserAPIKey'
         '401':
           description: Unauthorized
+
+  # ── Practices ──────────────────────────────────────────────────────────────
+
+  /api/v1/practices/:
+    get:
+      tags: [Practices]
+      summary: List all practices
+      responses:
+        '200':
+          description: List of practices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Practice'
+        '401':
+          description: Unauthorized
+
+    post:
+      tags: [Practices]
+      summary: Create a new practice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PracticeWriteRequest'
+      responses:
+        '201':
+          description: Practice created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Practice'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+
+  /api/v1/practices/{id}/:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      tags: [Practices]
+      summary: Retrieve a practice
+      responses:
+        '200':
+          description: Practice detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Practice'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+    put:
+      tags: [Practices]
+      summary: Replace a practice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PracticeWriteRequest'
+      responses:
+        '200':
+          description: Updated practice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Practice'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+    patch:
+      tags: [Practices]
+      summary: Partially update a practice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PracticeWriteRequest'
+      responses:
+        '200':
+          description: Updated practice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Practice'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+    delete:
+      tags: [Practices]
+      summary: Delete a practice
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+  # ── Providers ──────────────────────────────────────────────────────────────
+
+  /api/v1/providers/:
+    get:
+      tags: [Providers]
+      summary: List all providers
+      responses:
+        '200':
+          description: List of providers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Provider'
+        '401':
+          description: Unauthorized
+
+    post:
+      tags: [Providers]
+      summary: Create a new provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderWriteRequest'
+      responses:
+        '201':
+          description: Provider created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+
+  /api/v1/providers/{id}/:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      tags: [Providers]
+      summary: Retrieve a provider
+      responses:
+        '200':
+          description: Provider detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+    put:
+      tags: [Providers]
+      summary: Replace a provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderWriteRequest'
+      responses:
+        '200':
+          description: Updated provider
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+    patch:
+      tags: [Providers]
+      summary: Partially update a provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderWriteRequest'
+      responses:
+        '200':
+          description: Updated provider
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+    delete:
+      tags: [Providers]
+      summary: Delete a provider
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found

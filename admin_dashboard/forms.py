@@ -1,5 +1,6 @@
 from django import forms
 
+from practices.models import Practice, Provider
 from vida_verified.models import MonitorRequest, MonitorResults, ReportRequest, ReportResults
 
 
@@ -84,3 +85,33 @@ class MonitorResultsChangeForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.disabled = True
+
+
+class PracticeAddForm(forms.ModelForm):
+    class Meta:
+        model = Practice
+        fields = ['name', 'email', 'phone_number', 'tax_id', 'npi_number']
+
+
+class PracticeChangeForm(forms.ModelForm):
+    class Meta:
+        model = Practice
+        fields = ['name', 'email', 'phone_number', 'tax_id', 'npi_number']
+
+
+class ProviderAddForm(forms.ModelForm):
+    class Meta:
+        model = Provider
+        fields = [
+            'first_name', 'last_name', 'email', 'phone_number',
+            'title', 'specialty', 'practice',
+        ]
+
+
+class ProviderChangeForm(forms.ModelForm):
+    class Meta:
+        model = Provider
+        fields = [
+            'first_name', 'last_name', 'email', 'phone_number',
+            'title', 'specialty', 'practice',
+        ]
