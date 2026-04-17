@@ -75,6 +75,8 @@ class PracticeSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
     def get_default_providers(self, obj):
+        if not obj.provider_practices.exists():
+            return []
         providers = Provider.objects.filter(
             provider_practices__practice=obj,
             provider_practices__type=ProviderByPractice.TypeChoices.DEFAULT,
@@ -82,6 +84,8 @@ class PracticeSerializer(serializers.ModelSerializer):
         return ProviderSummarySerializer(providers, many=True).data
 
     def get_medical_director_providers(self, obj):
+        if not obj.provider_practices.exists():
+            return []
         providers = Provider.objects.filter(
             provider_practices__practice=obj,
             provider_practices__type=(
