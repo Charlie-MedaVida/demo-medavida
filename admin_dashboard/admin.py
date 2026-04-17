@@ -1,7 +1,13 @@
 from django.contrib import admin
 from rest_framework_api_key.models import APIKey
 
-from practices.models import Practice, Provider, ProviderByPractice
+from practices.models import (
+    DeaCredential,
+    NpiCredential,
+    Practice,
+    Provider,
+    ProviderByPractice,
+)
 from vida_verified.models import (
     MonitorRequest,
     MonitorResults,
@@ -83,6 +89,22 @@ class ReportResultsAdmin(BaseResultsAdmin):
 class MonitorResultsAdmin(BaseResultsAdmin):
     form = MonitorResultsChangeForm
     readonly_fields = ('sam_exclusions_results', 'npi_registration_results')
+
+
+@admin.register(NpiCredential)
+class NpiCredentialAdmin(admin.ModelAdmin):
+    fields = (
+        'license_number', 'last_checked_at',
+        'enumeration_date', 'expiration_date', 'file',
+    )
+
+
+@admin.register(DeaCredential)
+class DeaCredentialAdmin(admin.ModelAdmin):
+    fields = (
+        'license_number', 'last_checked_at',
+        'enumeration_date', 'expiration_date', 'file',
+    )
 
 
 class ProviderByPracticeInline(admin.TabularInline):
