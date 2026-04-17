@@ -356,6 +356,31 @@ components:
           type: string
           maxLength: 10
 
+    PracticeProviderCreateRequest:
+      type: object
+      description: >
+        All fields are optional. The practice is identified by the URL path.
+        An empty body is valid and creates a provider with blank defaults.
+      properties:
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+        phone_number:
+          type: string
+          maxLength: 20
+        title:
+          type: string
+          maxLength: 100
+        specialty:
+          type: string
+          maxLength: 255
+
     # ── Errors ────────────────────────────────────────────────────────────────
 
     Error:
@@ -1019,3 +1044,45 @@ paths:
           description: Unauthorized
         '404':
           description: Not found
+
+  # ── Nested: Practice Providers ─────────────────────────────────────────────
+
+  /api/v1/practice/{practice_id}/providers/:
+    parameters:
+      - name: practice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    post:
+      tags: [Providers]
+      summary: Create a provider and associate it with a practice
+      description: >
+        Creates a new Provider linked to the Practice identified by
+        `practice_id`. All body fields are optional — an empty body
+        creates a provider with blank defaults.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PracticeProviderCreateRequest'
+      responses:
+        '201':
+          description: Provider created and linked to the practice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Practice not found
