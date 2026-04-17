@@ -1,6 +1,26 @@
 from rest_framework import serializers
 
-from .models import Practice, Provider, ProviderByPractice
+from .models import DeaCredential, NpiCredential, Practice, Provider, ProviderByPractice
+
+
+class NpiCredentialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NpiCredential
+        fields = (
+            'id', 'license_number', 'last_checked_at',
+            'enumeration_date', 'expiration_date', 'file',
+        )
+        read_only_fields = ('id',)
+
+
+class DeaCredentialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeaCredential
+        fields = (
+            'id', 'license_number', 'last_checked_at',
+            'enumeration_date', 'expiration_date', 'file',
+        )
+        read_only_fields = ('id',)
 
 
 class ProviderByPracticeSerializer(serializers.ModelSerializer):
@@ -11,14 +31,18 @@ class ProviderByPracticeSerializer(serializers.ModelSerializer):
 
 class ProviderSerializer(serializers.ModelSerializer):
     provider_practices = ProviderByPracticeSerializer(many=True, read_only=True)
+    npi_credential = NpiCredentialSerializer(read_only=True)
+    dea_credential = DeaCredentialSerializer(read_only=True)
 
     class Meta:
         model = Provider
         fields = (
             'id', 'first_name', 'last_name', 'email', 'phone_number',
             'title', 'specialty', 'provider_practices',
+            'npi_credential', 'dea_credential',
+            'requires_npi', 'requires_dea',
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'requires_npi', 'requires_dea')
 
 
 class PracticeProviderCreateSerializer(serializers.ModelSerializer):

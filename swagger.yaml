@@ -250,6 +250,62 @@ components:
           type: string
           format: email
 
+    # ── Credentials ───────────────────────────────────────────────────────────
+
+    NpiCredential:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        license_number:
+          type: string
+          maxLength: 100
+        last_checked_at:
+          type: string
+          format: date-time
+          nullable: true
+        enumeration_date:
+          type: string
+          format: date
+          nullable: true
+        expiration_date:
+          type: string
+          format: date
+          nullable: true
+        file:
+          type: string
+          format: uri
+          nullable: true
+
+    DeaCredential:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        license_number:
+          type: string
+          maxLength: 100
+        last_checked_at:
+          type: string
+          format: date-time
+          nullable: true
+        enumeration_date:
+          type: string
+          format: date
+          nullable: true
+        expiration_date:
+          type: string
+          format: date
+          nullable: true
+        file:
+          type: string
+          format: uri
+          nullable: true
+
     # ── Practices ─────────────────────────────────────────────────────────────
 
     ProviderByPracticeRef:
@@ -312,6 +368,7 @@ components:
         title:
           type: string
           maxLength: 100
+          default: Uncredentialed
         specialty:
           type: string
           maxLength: 255
@@ -320,6 +377,24 @@ components:
           readOnly: true
           items:
             $ref: '#/components/schemas/ProviderByPracticeRef'
+        npi_credential:
+          readOnly: true
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/NpiCredential'
+        dea_credential:
+          readOnly: true
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/DeaCredential'
+        requires_npi:
+          type: boolean
+          readOnly: true
+          description: True if the provider's title is MD
+        requires_dea:
+          type: boolean
+          readOnly: true
+          description: True if the provider's title is MD
 
     ProviderWriteRequest:
       type: object
