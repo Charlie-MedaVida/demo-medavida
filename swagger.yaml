@@ -1192,10 +1192,10 @@ paths:
                       readOnly: true
                     title:
                       type: string
-                      example: MD
+                      example: Uncredentialed
                     summary:
                       type: string
-                      example: Medical Doctor
+                      example: Uncredentialed Provider
         '401':
           description: Unauthorized
 
