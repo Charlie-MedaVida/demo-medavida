@@ -3,8 +3,16 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Practice, Provider, ProviderByPractice
+from .models import (
+    DeaCredential,
+    NpiCredential,
+    Practice,
+    Provider,
+    ProviderByPractice,
+)
 from .serializers import (
+    DeaCredentialSerializer,
+    NpiCredentialSerializer,
     PracticeProviderCreateSerializer,
     PracticeSerializer,
     ProviderSerializer,
@@ -20,7 +28,9 @@ class PracticeViewSet(viewsets.ModelViewSet):
 
 
 class ProviderViewSet(viewsets.ModelViewSet):
-    queryset = Provider.objects.prefetch_related('practices').all()
+    queryset = (
+        Provider.objects.prefetch_related('practices').all()
+    )
     serializer_class = ProviderSerializer
     permission_classes = [IsAuthenticated]
 
@@ -72,3 +82,25 @@ class PracticeProviderCreateView(generics.CreateAPIView):
             practice=practice,
             type=relationship_type,
         )
+
+
+class NpiCredentialCreateView(generics.CreateAPIView):
+    serializer_class = NpiCredentialSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        provider = Provider.objects.get(pk=self.kwargs['provider_id'])
+        credential = serializer.save()
+        provider.npi_credential = credential
+        provider.save()
+
+
+class DeaCredentialCreateView(generics.CreateAPIView):
+    serializer_class = DeaCredentialSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        provider = Provider.objects.get(pk=self.kwargs['provider_id'])
+        credential = serializer.save()
+        provider.dea_credential = credential
+        provider.save()

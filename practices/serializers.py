@@ -1,26 +1,33 @@
 from rest_framework import serializers
 
-from .models import DeaCredential, NpiCredential, Practice, Provider, ProviderByPractice
+from .models import (
+    DeaCredential,
+    NpiCredential,
+    Practice,
+    Provider,
+    ProviderByPractice,
+)
+
+
+CREDENTIAL_FIELDS = (
+    'id', 'license_number', 'last_checked_at',
+    'enumeration_date', 'expiration_date', 'file',
+)
+CREDENTIAL_READ_ONLY_FIELDS = ('id', 'last_checked_at')
 
 
 class NpiCredentialSerializer(serializers.ModelSerializer):
     class Meta:
         model = NpiCredential
-        fields = (
-            'id', 'license_number', 'last_checked_at',
-            'enumeration_date', 'expiration_date', 'file',
-        )
-        read_only_fields = ('id',)
+        fields = CREDENTIAL_FIELDS
+        read_only_fields = CREDENTIAL_READ_ONLY_FIELDS
 
 
 class DeaCredentialSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeaCredential
-        fields = (
-            'id', 'license_number', 'last_checked_at',
-            'enumeration_date', 'expiration_date', 'file',
-        )
-        read_only_fields = ('id',)
+        fields = CREDENTIAL_FIELDS
+        read_only_fields = CREDENTIAL_READ_ONLY_FIELDS
 
 
 class ProviderByPracticeSerializer(serializers.ModelSerializer):
@@ -30,7 +37,9 @@ class ProviderByPracticeSerializer(serializers.ModelSerializer):
 
 
 class ProviderSerializer(serializers.ModelSerializer):
-    provider_practices = ProviderByPracticeSerializer(many=True, read_only=True)
+    provider_practices = ProviderByPracticeSerializer(
+        many=True, read_only=True,
+    )
     npi_credential = NpiCredentialSerializer(read_only=True)
     dea_credential = DeaCredentialSerializer(read_only=True)
 

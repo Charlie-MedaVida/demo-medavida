@@ -2,6 +2,8 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from .views import (
+    DeaCredentialCreateView,
+    NpiCredentialCreateView,
     PracticeProviderCreateView,
     PracticeViewSet,
     ProviderTitleListView,
@@ -24,5 +26,15 @@ urlpatterns = router.urls + [
         'practice/<uuid:practice_id>/providers/',
         PracticeProviderCreateView.as_view(),
         name='practice-provider-create',
+    ),
+    path(
+        'providers/<uuid:provider_id>/npi-credentials/',
+        NpiCredentialCreateView.as_view(),
+        name='provider-npi-credential-create',
+    ),
+    path(
+        'providers/<uuid:provider_id>/dea-credentials/',
+        DeaCredentialCreateView.as_view(),
+        name='provider-dea-credential-create',
     ),
 ]
