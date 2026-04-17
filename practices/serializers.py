@@ -10,9 +10,7 @@ class ProviderByPracticeSerializer(serializers.ModelSerializer):
 
 
 class ProviderSerializer(serializers.ModelSerializer):
-    provider_practices = ProviderByPracticeSerializer(
-        many=True, read_only=True,
-    )
+    provider_practices = ProviderByPracticeSerializer(many=True, read_only=True)
 
     class Meta:
         model = Provider
@@ -31,7 +29,7 @@ class PracticeProviderCreateSerializer(serializers.ModelSerializer):
     """
     type = serializers.ChoiceField(
         choices=ProviderByPractice.TypeChoices.choices,
-        default=ProviderByPractice.TypeChoices.UNCREDENTIALED,
+        default=ProviderByPractice.TypeChoices.DEFAULT,
         required=False,
         write_only=True,
     )

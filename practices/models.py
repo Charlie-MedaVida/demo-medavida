@@ -36,7 +36,6 @@ class Provider(models.Model):
 
 class ProviderByPractice(models.Model):
     class TypeChoices(models.TextChoices):
-        UNCREDENTIALED = 'uncredentialed', 'Uncredentialed'
         DEFAULT = 'default', 'Default'
         MEDICAL_DIRECTOR = 'medical_director', 'Medical Director'
 
@@ -53,7 +52,7 @@ class ProviderByPractice(models.Model):
     type = models.CharField(
         max_length=20,
         choices=TypeChoices.choices,
-        default=TypeChoices.UNCREDENTIALED,
+        default=TypeChoices.DEFAULT,
     )
 
     class Meta:
