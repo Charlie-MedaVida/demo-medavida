@@ -21,7 +21,9 @@ class Provider(models.Model):
     last_name = models.CharField(max_length=150)
     email = models.EmailField()
     phone_number = models.CharField(max_length=20)
-    title = models.CharField(max_length=100)
+    title = models.CharField(
+        max_length=100, blank=True, default='Uncredentialed',
+    )
     specialty = models.CharField(max_length=255)
     practices = models.ManyToManyField(
         Practice,

@@ -26,6 +26,7 @@ class ProviderViewSet(viewsets.ModelViewSet):
 
 
 PROVIDER_TITLES = [
+    {'id': 0,  'title': 'Uncredentialed', 'summary': 'Uncredentialed Provider'},
     {'id': 1,  'title': 'MD',      'summary': 'Medical Doctor'},
     {'id': 2,  'title': 'DO',   'summary': 'Doctor of Osteopathic Medicine'},
     {'id': 3,  'title': 'NP',      'summary': 'Nurse Practitioner'},
