@@ -48,11 +48,11 @@ class Provider(models.Model):
 
     @property
     def requires_npi(self):
-        return self.title == 'MD'
+        return True
 
     @property
     def requires_dea(self):
-        return self.title == 'MD'
+        return True
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'

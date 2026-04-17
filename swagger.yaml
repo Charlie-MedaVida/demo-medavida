@@ -252,6 +252,25 @@ components:
 
     # ── Credentials ───────────────────────────────────────────────────────────
 
+    CredentialWriteRequest:
+      type: object
+      properties:
+        license_number:
+          type: string
+          maxLength: 100
+        enumeration_date:
+          type: string
+          format: date
+          nullable: true
+        expiration_date:
+          type: string
+          format: date
+          nullable: true
+        file:
+          type: string
+          format: binary
+          nullable: true
+
     NpiCredential:
       type: object
       properties:
@@ -266,6 +285,7 @@ components:
           type: string
           format: date-time
           nullable: true
+          readOnly: true
         enumeration_date:
           type: string
           format: date
@@ -293,6 +313,7 @@ components:
           type: string
           format: date-time
           nullable: true
+          readOnly: true
         enumeration_date:
           type: string
           format: date
@@ -1240,3 +1261,85 @@ paths:
           description: Unauthorized
         '404':
           description: Practice not found
+
+  # ── Nested: Provider Credentials ───────────────────────────────────────────
+
+  /api/v1/providers/{provider_id}/npi-credentials/:
+    parameters:
+      - name: provider_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    post:
+      tags: [Providers]
+      summary: Create an NPI credential for a provider
+      description: >
+        Creates a new NpiCredential and links it to the Provider identified
+        by `provider_id`. The `last_checked_at` field is read-only and
+        managed server-side.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CredentialWriteRequest'
+      responses:
+        '201':
+          description: NPI credential created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NpiCredential'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Provider not found
+
+  /api/v1/providers/{provider_id}/dea-credentials/:
+    parameters:
+      - name: provider_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    post:
+      tags: [Providers]
+      summary: Create a DEA credential for a provider
+      description: >
+        Creates a new DeaCredential and links it to the Provider identified
+        by `provider_id`. The `last_checked_at` field is read-only and
+        managed server-side.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CredentialWriteRequest'
+      responses:
+        '201':
+          description: DEA credential created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeaCredential'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Provider not found
