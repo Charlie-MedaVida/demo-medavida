@@ -1045,6 +1045,37 @@ paths:
         '404':
           description: Not found
 
+  # ── Provider Titles ────────────────────────────────────────────────────────
+
+  /api/v1/provider-titles:
+    get:
+      tags: [Providers]
+      summary: List all available provider titles
+      description: >
+        Returns a constant list of recognized provider title codes and their
+        descriptions. This list does not change at runtime.
+      responses:
+        '200':
+          description: List of provider titles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      readOnly: true
+                    title:
+                      type: string
+                      example: MD
+                    summary:
+                      type: string
+                      example: Medical Doctor
+        '401':
+          description: Unauthorized
+
   # ── Nested: Practice Providers ─────────────────────────────────────────────
 
   /api/v1/practice/{practice_id}/providers/:
