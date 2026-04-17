@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Practice, Provider
+from .models import Practice, Provider, ProviderByPractice
 from .serializers import (
     PracticeProviderCreateSerializer,
     PracticeSerializer,
@@ -12,20 +12,22 @@ from .serializers import (
 
 
 class PracticeViewSet(viewsets.ModelViewSet):
-    queryset = Practice.objects.prefetch_related('providers').all()
+    queryset = Practice.objects.prefetch_related(
+        'provider_practices__provider'
+    ).all()
     serializer_class = PracticeSerializer
     permission_classes = [IsAuthenticated]
 
 
 class ProviderViewSet(viewsets.ModelViewSet):
-    queryset = Provider.objects.select_related('practice').all()
+    queryset = Provider.objects.prefetch_related('practices').all()
     serializer_class = ProviderSerializer
     permission_classes = [IsAuthenticated]
 
 
 PROVIDER_TITLES = [
     {'id': 1,  'title': 'MD',      'summary': 'Medical Doctor'},
-    {'id': 2,  'title': 'DO',      'summary': 'Doctor of Osteopathic Medicine'},
+    {'id': 2,  'title': 'DO',   'summary': 'Doctor of Osteopathic Medicine'},
     {'id': 3,  'title': 'NP',      'summary': 'Nurse Practitioner'},
     {'id': 4,  'title': 'PA',      'summary': 'Physician Assistant'},
     {'id': 5,  'title': 'RN',      'summary': 'Registered Nurse'},
@@ -39,7 +41,7 @@ PROVIDER_TITLES = [
     {'id': 13, 'title': 'PT',      'summary': 'Physical Therapist'},
     {'id': 14, 'title': 'OT',      'summary': 'Occupational Therapist'},
     {'id': 15, 'title': 'SLP',     'summary': 'Speech-Language Pathologist'},
-    {'id': 16, 'title': 'CRNA',    'summary': 'Certified Registered Nurse Anesthetist'},
+    {'id': 16, 'title': 'CRNA', 'summary': 'Certified Registered Nurse Anesthetist'},  # noqa: E501
     {'id': 17, 'title': 'CNM',     'summary': 'Certified Nurse Midwife'},
     {'id': 18, 'title': 'DPT',     'summary': 'Doctor of Physical Therapy'},
     {'id': 19, 'title': 'AuD',     'summary': 'Doctor of Audiology'},
@@ -60,4 +62,12 @@ class PracticeProviderCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         practice = Practice.objects.get(pk=self.kwargs['practice_id'])
-        serializer.save(practice=practice)
+        relationship_type = serializer.validated_data.pop(
+            'type', ProviderByPractice.TypeChoices.DEFAULT
+        )
+        provider = serializer.save()
+        ProviderByPractice.objects.create(
+            provider=provider,
+            practice=practice,
+            type=relationship_type,
+        )

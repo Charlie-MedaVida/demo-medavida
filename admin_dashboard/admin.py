@@ -1,8 +1,13 @@
 from django.contrib import admin
 from rest_framework_api_key.models import APIKey
 
-from practices.models import Practice, Provider
-from vida_verified.models import MonitorRequest, MonitorResults, ReportRequest, ReportResults
+from practices.models import Practice, Provider, ProviderByPractice
+from vida_verified.models import (
+    MonitorRequest,
+    MonitorResults,
+    ReportRequest,
+    ReportResults,
+)
 
 from .forms import (
     MonitorRequestAddForm,
@@ -39,7 +44,10 @@ class BaseRequestAdmin(admin.ModelAdmin):
     )
 
     def get_form(self, request, obj=None, **kwargs):
-        kwargs['form'] = self.add_form_class if obj is None else self.change_form_class
+        if obj is None:
+            kwargs['form'] = self.add_form_class
+        else:
+            kwargs['form'] = self.change_form_class
         return super().get_form(request, obj, **kwargs)
 
     def get_fieldsets(self, request, obj=None):
@@ -77,19 +85,30 @@ class MonitorResultsAdmin(BaseResultsAdmin):
     readonly_fields = ('sam_exclusions_results', 'npi_registration_results')
 
 
+class ProviderByPracticeInline(admin.TabularInline):
+    model = ProviderByPractice
+    extra = 1
+
+
 @admin.register(Practice)
 class PracticeAdmin(admin.ModelAdmin):
     add_form_class = PracticeAddForm
     change_form_class = PracticeChangeForm
+    inlines = [ProviderByPracticeInline]
 
     add_fieldsets = (
         (None, {
-            'fields': ('name', 'email', 'phone_number', 'tax_id', 'npi_number'),
+            'fields': (
+                'name', 'email', 'phone_number', 'tax_id', 'npi_number',
+            ),
         }),
     )
 
     def get_form(self, request, obj=None, **kwargs):
-        kwargs['form'] = self.add_form_class if obj is None else self.change_form_class
+        if obj is None:
+            kwargs['form'] = self.add_form_class
+        else:
+            kwargs['form'] = self.change_form_class
         return super().get_form(request, obj, **kwargs)
 
     def get_fieldsets(self, request, obj=None):
@@ -102,6 +121,7 @@ class PracticeAdmin(admin.ModelAdmin):
 class ProviderAdmin(admin.ModelAdmin):
     add_form_class = ProviderAddForm
     change_form_class = ProviderChangeForm
+    inlines = [ProviderByPracticeInline]
 
     add_fieldsets = (
         (None, {
@@ -111,13 +131,15 @@ class ProviderAdmin(admin.ModelAdmin):
                 'phone_number',
                 'title',
                 'specialty',
-                'practice',
             ),
         }),
     )
 
     def get_form(self, request, obj=None, **kwargs):
-        kwargs['form'] = self.add_form_class if obj is None else self.change_form_class
+        if obj is None:
+            kwargs['form'] = self.add_form_class
+        else:
+            kwargs['form'] = self.change_form_class
         return super().get_form(request, obj, **kwargs)
 
     def get_fieldsets(self, request, obj=None):

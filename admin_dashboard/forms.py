@@ -1,7 +1,12 @@
 from django import forms
 
 from practices.models import Practice, Provider
-from vida_verified.models import MonitorRequest, MonitorResults, ReportRequest, ReportResults
+from vida_verified.models import (
+    MonitorRequest,
+    MonitorResults,
+    ReportRequest,
+    ReportResults,
+)
 
 
 class ReportRequestAddForm(forms.ModelForm):
@@ -27,7 +32,9 @@ class ReportRequestChangeForm(forms.ModelForm):
         model = ReportRequest
         fields = ['status']
         widgets = {
-            'status': forms.Select(choices=ReportRequest.StatusChoices.choices),
+            'status': forms.Select(
+                choices=ReportRequest.StatusChoices.choices
+            ),
         }
 
     def __init__(self, *args, **kwargs):
@@ -56,7 +63,9 @@ class MonitorRequestChangeForm(forms.ModelForm):
         model = MonitorRequest
         fields = ['status']
         widgets = {
-            'status': forms.Select(choices=MonitorRequest.StatusChoices.choices),
+            'status': forms.Select(
+                choices=MonitorRequest.StatusChoices.choices
+            ),
         }
 
     def __init__(self, *args, **kwargs):
@@ -104,7 +113,7 @@ class ProviderAddForm(forms.ModelForm):
         model = Provider
         fields = [
             'first_name', 'last_name', 'email', 'phone_number',
-            'title', 'specialty', 'practice',
+            'title', 'specialty',
         ]
 
 
@@ -113,5 +122,5 @@ class ProviderChangeForm(forms.ModelForm):
         model = Provider
         fields = [
             'first_name', 'last_name', 'email', 'phone_number',
-            'title', 'specialty', 'practice',
+            'title', 'specialty',
         ]
