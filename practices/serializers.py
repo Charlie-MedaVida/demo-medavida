@@ -91,8 +91,9 @@ class ProviderSummarySerializer(serializers.ModelSerializer):
         fields = (
             'id', 'first_name', 'last_name', 'email',
             'phone_number', 'title', 'specialty',
+            'requires_npi', 'requires_dea',
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'requires_npi', 'requires_dea')
 
 
 class PracticeSerializer(serializers.ModelSerializer):
