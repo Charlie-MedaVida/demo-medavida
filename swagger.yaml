@@ -252,6 +252,44 @@ components:
 
     # ── Practices ─────────────────────────────────────────────────────────────
 
+    ProviderByPracticeRef:
+      type: object
+      description: Represents a ProviderByPractice relationship record
+      properties:
+        practice:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [default, medical_director]
+
+    ProviderSummary:
+      type: object
+      description: Flat provider representation used when nested inside a Practice
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+        phone_number:
+          type: string
+          maxLength: 20
+        title:
+          type: string
+          maxLength: 100
+        specialty:
+          type: string
+          maxLength: 255
+
     Provider:
       type: object
       properties:
@@ -277,14 +315,15 @@ components:
         specialty:
           type: string
           maxLength: 255
-        practice:
-          type: string
-          format: uuid
-          description: UUID of the associated Practice
+        provider_practices:
+          type: array
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/ProviderByPracticeRef'
 
     ProviderWriteRequest:
       type: object
-      required: [first_name, last_name, email, phone_number, title, specialty, practice]
+      required: [first_name, last_name, email, phone_number, title, specialty]
       properties:
         first_name:
           type: string
@@ -304,9 +343,6 @@ components:
         specialty:
           type: string
           maxLength: 255
-        practice:
-          type: string
-          format: uuid
 
     Practice:
       type: object
@@ -330,11 +366,18 @@ components:
         npi_number:
           type: string
           maxLength: 10
-        providers:
+        default_providers:
           type: array
           readOnly: true
+          description: Providers linked to this practice with type "default"
           items:
-            $ref: '#/components/schemas/Provider'
+            $ref: '#/components/schemas/ProviderSummary'
+        medical_director_providers:
+          type: array
+          readOnly: true
+          description: Providers linked to this practice with type "medical_director"
+          items:
+            $ref: '#/components/schemas/ProviderSummary'
 
     PracticeWriteRequest:
       type: object
@@ -361,6 +404,7 @@ components:
       description: >
         All fields are optional. The practice is identified by the URL path.
         An empty body is valid and creates a provider with blank defaults.
+        Use the `type` field to set the relationship type (defaults to "default").
       properties:
         first_name:
           type: string
@@ -380,6 +424,10 @@ components:
         specialty:
           type: string
           maxLength: 255
+        type:
+          type: string
+          enum: [default, medical_director]
+          default: default
 
     # ── Errors ────────────────────────────────────────────────────────────────
 
