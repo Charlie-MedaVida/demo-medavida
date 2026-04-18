@@ -3,14 +3,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import (
-    DeaCredential,
-    NpiCredential,
-    Practice,
-    Provider,
-    ProviderByPractice,
-)
+from .models import Practice, Provider, ProviderByPractice
 from .serializers import (
+    DeaCertificateUploadSerializer,
     DeaCredentialSerializer,
     NpiCredentialSerializer,
     PracticeProviderCreateSerializer,
@@ -36,7 +31,7 @@ class ProviderViewSet(viewsets.ModelViewSet):
 
 
 PROVIDER_TITLES = [
-    {'id': 0,  'title': 'Uncredentialed', 'summary': 'Uncredentialed Provider'},
+    {'id': 0, 'title': 'Uncredentialed', 'summary': 'Uncredentialed Provider'},
     {'id': 1,  'title': 'MD',      'summary': 'Medical Doctor'},
     {'id': 2,  'title': 'DO',   'summary': 'Doctor of Osteopathic Medicine'},
     {'id': 3,  'title': 'NP',      'summary': 'Nurse Practitioner'},
@@ -104,3 +99,16 @@ class DeaCredentialCreateView(generics.CreateAPIView):
         credential = serializer.save()
         provider.dea_credential = credential
         provider.save()
+
+
+class DeaCertificateUploadView(generics.UpdateAPIView):
+    serializer_class = DeaCertificateUploadSerializer
+    permission_classes = [IsAuthenticated]
+    http_method_names = ['post']
+
+    def get_object(self):
+        provider = Provider.objects.get(pk=self.kwargs['provider_id'])
+        return provider.dea_credential
+
+    def post(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)

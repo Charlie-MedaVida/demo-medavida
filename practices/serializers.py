@@ -16,6 +16,15 @@ CREDENTIAL_FIELDS = (
 CREDENTIAL_READ_ONLY_FIELDS = ('id', 'last_checked_at')
 
 
+class DeaCertificateUploadSerializer(serializers.ModelSerializer):
+    file = serializers.FileField()
+
+    class Meta:
+        model = DeaCredential
+        fields = ('id', 'file')
+        read_only_fields = ('id',)
+
+
 class NpiCredentialSerializer(serializers.ModelSerializer):
     class Meta:
         model = NpiCredential
