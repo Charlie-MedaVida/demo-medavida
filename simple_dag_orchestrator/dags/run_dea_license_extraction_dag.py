@@ -13,7 +13,10 @@ def run_dea_license_extraction(dea_certificate_id: str):
     storage_location = (
         settings.STORAGES['default']['OPTIONS']['location']
     )
+    source_key = f'{storage_location}/{dea_credential.file.name}'
+    print("run_dea_license_extraction")
+    print(source_key)
     invoke_dea_license_extraction(
         uuid=str(dea_credential.id),
-        source_key=f'{storage_location}/{dea_credential.file.name}',
+        source_key=source_key,
     )
