@@ -121,6 +121,32 @@ def invoke_load_monitor_results(uuids: list[str]) -> dict:
     )
 
 
+def invoke_dea_license_extraction(uuid: str, source_key: str) -> dict:
+    return invoke_etls(
+        etl='reducto_extract',
+        params={
+            'uuid': uuid,
+            'source_key': source_key,
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'dea_registration_number': {'type': 'string'},
+                    'this_registration_expires': {'type': 'string'},
+                    'issue_date': {'type': 'string'},
+                    'business_activity': {'type': 'string'},
+                    'schedules': {'type': 'string'},
+                    'full_name': {'type': 'string'},
+                    'company_name': {'type': 'string'},
+                    'street_address': {'type': 'string'},
+                    'city': {'type': 'string'},
+                    'state': {'type': 'string'},
+                    'postal_code': {'type': 'string'},
+                },
+            },
+        },
+    )
+
+
 def invoke_crawler(
     platform: str, bot: str, **kwargs
 ) -> dict:
