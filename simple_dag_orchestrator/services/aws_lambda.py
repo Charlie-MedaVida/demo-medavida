@@ -127,6 +127,7 @@ def invoke_dea_license_extraction(uuid: str, source_key: str) -> dict:
         params={
             'uuid': uuid,
             'source_key': source_key,
+            'source_bucket': settings.AWS_STORAGE_BUCKET_NAME,
             'schema': {
                 'type': 'object',
                 'properties': {
