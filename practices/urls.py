@@ -5,6 +5,7 @@ from .views import (
     DeaCertificateUploadView,
     DeaCredentialCreateView,
     NpiCredentialCreateView,
+    NppesSearchView,
     PracticeProviderCreateView,
     PracticeViewSet,
     ProviderTitleListView,
@@ -18,6 +19,11 @@ router.register('practices', PracticeViewSet, basename='practice')
 router.register('providers', ProviderViewSet, basename='provider')
 
 urlpatterns = router.urls + [
+    path(
+        'nppes/search',
+        NppesSearchView.as_view(),
+        name='nppes-search',
+    ),
     path(
         'provider-titles',
         ProviderTitleListView.as_view(),
