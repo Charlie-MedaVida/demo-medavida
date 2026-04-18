@@ -144,6 +144,12 @@ class ProviderAdmin(admin.ModelAdmin):
     add_form_class = ProviderAddForm
     change_form_class = ProviderChangeForm
     inlines = [ProviderByPracticeInline]
+    readonly_fields = (
+        'npi_license_number', 'npi_last_checked_at',
+        'npi_enumeration_date', 'npi_expiration_date', 'npi_file',
+        'dea_license_number', 'dea_last_checked_at',
+        'dea_enumeration_date', 'dea_expiration_date', 'dea_file',
+    )
 
     add_fieldsets = (
         (None, {
@@ -157,6 +163,64 @@ class ProviderAdmin(admin.ModelAdmin):
         }),
     )
 
+    change_fieldsets = (
+        (None, {
+            'fields': (
+                ('first_name', 'last_name'),
+                'email',
+                'phone_number',
+                'title',
+                'specialty',
+            ),
+        }),
+        ('NPI Credential', {
+            'fields': (
+                'npi_license_number', 'npi_last_checked_at',
+                'npi_enumeration_date', 'npi_expiration_date', 'npi_file',
+            ),
+        }),
+        ('DEA Credential', {
+            'fields': (
+                'dea_license_number', 'dea_last_checked_at',
+                'dea_enumeration_date', 'dea_expiration_date', 'dea_file',
+            ),
+        }),
+    )
+
+    def _credential_field(self, obj, credential_attr, field):
+        credential = getattr(obj, credential_attr, None)
+        return getattr(credential, field, '—') if credential else '—'
+
+    def npi_license_number(self, obj):
+        return self._credential_field(obj, 'npi_credential', 'license_number')
+
+    def npi_last_checked_at(self, obj):
+        return self._credential_field(obj, 'npi_credential', 'last_checked_at')
+
+    def npi_enumeration_date(self, obj):
+        return self._credential_field(obj, 'npi_credential', 'enumeration_date')
+
+    def npi_expiration_date(self, obj):
+        return self._credential_field(obj, 'npi_credential', 'expiration_date')
+
+    def npi_file(self, obj):
+        return self._credential_field(obj, 'npi_credential', 'file')
+
+    def dea_license_number(self, obj):
+        return self._credential_field(obj, 'dea_credential', 'license_number')
+
+    def dea_last_checked_at(self, obj):
+        return self._credential_field(obj, 'dea_credential', 'last_checked_at')
+
+    def dea_enumeration_date(self, obj):
+        return self._credential_field(obj, 'dea_credential', 'enumeration_date')
+
+    def dea_expiration_date(self, obj):
+        return self._credential_field(obj, 'dea_credential', 'expiration_date')
+
+    def dea_file(self, obj):
+        return self._credential_field(obj, 'dea_credential', 'file')
+
     def get_form(self, request, obj=None, **kwargs):
         if obj is None:
             kwargs['form'] = self.add_form_class
@@ -167,4 +231,4 @@ class ProviderAdmin(admin.ModelAdmin):
     def get_fieldsets(self, request, obj=None):
         if obj is None:
             return self.add_fieldsets
-        return super().get_fieldsets(request, obj)
+        return self.change_fieldsets

@@ -101,14 +101,12 @@ class DeaCredentialCreateView(generics.CreateAPIView):
         provider.save()
 
 
-class DeaCertificateUploadView(generics.UpdateAPIView):
+class DeaCertificateUploadView(generics.CreateAPIView):
     serializer_class = DeaCertificateUploadSerializer
     permission_classes = [IsAuthenticated]
-    http_method_names = ['post']
 
-    def get_object(self):
+    def perform_create(self, serializer):
         provider = Provider.objects.get(pk=self.kwargs['provider_id'])
-        return provider.dea_credential
-
-    def post(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
+        credential = serializer.save()
+        provider.dea_credential = credential
+        provider.save()
