@@ -151,6 +151,11 @@ class ProviderAdmin(admin.ModelAdmin):
         'dea_enumeration_date', 'dea_expiration_date', 'dea_file',
     )
 
+    list_display = (
+        'first_name', 'last_name', 'title',
+        'has_npi_credential', 'has_dea_credential',
+    )
+
     add_fieldsets = (
         (None, {
             'fields': (
@@ -198,10 +203,14 @@ class ProviderAdmin(admin.ModelAdmin):
         return self._credential_field(obj, 'npi_credential', 'last_checked_at')
 
     def npi_enumeration_date(self, obj):
-        return self._credential_field(obj, 'npi_credential', 'enumeration_date')
+        return self._credential_field(
+            obj, 'npi_credential', 'enumeration_date',
+        )
 
     def npi_expiration_date(self, obj):
-        return self._credential_field(obj, 'npi_credential', 'expiration_date')
+        return self._credential_field(
+            obj, 'npi_credential', 'expiration_date',
+        )
 
     def npi_file(self, obj):
         return self._credential_field(obj, 'npi_credential', 'file')
@@ -213,13 +222,23 @@ class ProviderAdmin(admin.ModelAdmin):
         return self._credential_field(obj, 'dea_credential', 'last_checked_at')
 
     def dea_enumeration_date(self, obj):
-        return self._credential_field(obj, 'dea_credential', 'enumeration_date')
+        return self._credential_field(
+            obj, 'dea_credential', 'enumeration_date',
+        )
 
     def dea_expiration_date(self, obj):
         return self._credential_field(obj, 'dea_credential', 'expiration_date')
 
     def dea_file(self, obj):
         return self._credential_field(obj, 'dea_credential', 'file')
+
+    @admin.display(boolean=True, description='NPI Credential')
+    def has_npi_credential(self, obj):
+        return obj.npi_credential is not None
+
+    @admin.display(boolean=True, description='DEA Credential')
+    def has_dea_credential(self, obj):
+        return obj.dea_credential is not None
 
     def get_form(self, request, obj=None, **kwargs):
         if obj is None:
