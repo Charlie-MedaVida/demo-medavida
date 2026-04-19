@@ -115,6 +115,7 @@ class DeaCertificateUploadView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
+        print("DeaCertificateUploadView")
         from django.conf import settings
         from simple_dag_orchestrator.services.aws_lambda import (
             invoke_dea_license_extraction,
@@ -126,8 +127,12 @@ class DeaCertificateUploadView(generics.CreateAPIView):
 
         storage_location = settings.STORAGES['default']['OPTIONS']['location']
         source_key = f'{storage_location}/{credential.file.name}'
+        print("source_key")
+        print(source_key)
         response = invoke_dea_license_extraction(
             uuid=str(credential.id),
             source_key=source_key,
         )
+        print(response)
+        print("CALLING APPLY DEA EXTRACT")
         apply_dea_extraction(response, credential)

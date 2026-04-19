@@ -39,6 +39,11 @@ def _parse_date(value: str):
 
 
 def apply_dea_extraction(response: dict, credential) -> None:
+    print("-")
+    print("-")
+    print("-")
+    print("-")
+    print(".")
     logger.info(
         'apply_dea_extraction called. credential_id=%s raw_response=%s',
         credential.id, response,
