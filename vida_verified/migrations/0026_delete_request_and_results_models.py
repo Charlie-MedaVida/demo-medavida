@@ -4,7 +4,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('vida_verified', '0025_npicredential_deacredential'),
+        ('vida_verified', '0025b_copy_credentials_from_practices'),
     ]
 
     operations = [
