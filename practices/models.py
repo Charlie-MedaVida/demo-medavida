@@ -16,6 +16,11 @@ class Practice(models.Model):
 
 
 class Provider(models.Model):
+    class VerificationStatus(models.TextChoices):
+        RUNNING = 'running', 'Running'
+        VERIFIED = 'verified', 'Verified'
+        FAILED = 'failed', 'Failed'
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
@@ -25,6 +30,20 @@ class Provider(models.Model):
         max_length=100, blank=True, default='Uncredentialed',
     )
     specialty = models.CharField(max_length=255)
+    ssn = models.CharField(max_length=9, blank=True, default='')
+    zip_code = models.CharField(max_length=10, blank=True, default='')
+    npi_verification_status = models.CharField(
+        max_length=20,
+        choices=VerificationStatus.choices,
+        null=True,
+        blank=True,
+    )
+    dea_verification_status = models.CharField(
+        max_length=20,
+        choices=VerificationStatus.choices,
+        null=True,
+        blank=True,
+    )
     npi_credential = models.ForeignKey(
         'NpiCredential',
         on_delete=models.SET_NULL,

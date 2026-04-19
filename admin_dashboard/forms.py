@@ -113,7 +113,7 @@ class ProviderAddForm(forms.ModelForm):
         model = Provider
         fields = [
             'first_name', 'last_name', 'email', 'phone_number',
-            'title', 'specialty',
+            'title', 'specialty', 'ssn', 'zip_code',
         ]
 
 
@@ -122,5 +122,5 @@ class ProviderChangeForm(forms.ModelForm):
         model = Provider
         fields = [
             'first_name', 'last_name', 'email', 'phone_number',
-            'title', 'specialty',
+            'title', 'specialty', 'ssn', 'zip_code',
         ]

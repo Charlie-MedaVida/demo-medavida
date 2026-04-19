@@ -103,6 +103,23 @@ class DeaCredentialCreateView(generics.CreateAPIView):
         provider.save()
 
 
+class ProviderVerifyView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, provider_id):
+        from simple_dag_orchestrator.dags import verify_provider
+        provider = Provider.objects.get(pk=provider_id)
+        provider.npi_verification_status = (
+            Provider.VerificationStatus.RUNNING
+        )
+        provider.dea_verification_status = (
+            Provider.VerificationStatus.RUNNING
+        )
+        provider.save()
+        verify_provider.delay(str(provider_id))
+        return Response(ProviderSerializer(provider).data)
+
+
 class NppesSearchView(APIView):
     permission_classes = [IsAuthenticated]
 

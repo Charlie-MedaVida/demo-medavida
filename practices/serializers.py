@@ -56,11 +56,15 @@ class ProviderSerializer(serializers.ModelSerializer):
         model = Provider
         fields = (
             'id', 'first_name', 'last_name', 'email', 'phone_number',
-            'title', 'specialty', 'provider_practices',
+            'title', 'specialty', 'ssn', 'zip_code', 'provider_practices',
             'npi_credential', 'dea_credential',
             'requires_npi', 'requires_dea',
+            'npi_verification_status', 'dea_verification_status',
         )
-        read_only_fields = ('id', 'requires_npi', 'requires_dea')
+        read_only_fields = (
+            'id', 'requires_npi', 'requires_dea',
+            'npi_verification_status', 'dea_verification_status',
+        )
 
 
 class PracticeProviderCreateSerializer(serializers.ModelSerializer):

@@ -9,6 +9,7 @@ from .views import (
     PracticeProviderCreateView,
     PracticeViewSet,
     ProviderTitleListView,
+    ProviderVerifyView,
     ProviderViewSet,
 )
 
@@ -33,6 +34,11 @@ urlpatterns = router.urls + [
         'practice/<uuid:practice_id>/providers/',
         PracticeProviderCreateView.as_view(),
         name='practice-provider-create',
+    ),
+    path(
+        'providers/<uuid:provider_id>/verify',
+        ProviderVerifyView.as_view(),
+        name='provider-verify',
     ),
     path(
         'providers/<uuid:provider_id>/npi-credentials/',

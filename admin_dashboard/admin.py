@@ -180,6 +180,8 @@ class ProviderAdmin(admin.ModelAdmin):
                 'phone_number',
                 'title',
                 'specialty',
+                'ssn',
+                'zip_code',
             ),
         }),
     )
@@ -192,6 +194,8 @@ class ProviderAdmin(admin.ModelAdmin):
                 'phone_number',
                 'title',
                 'specialty',
+                'ssn',
+                'zip_code',
             ),
         }),
         ('NPI Credential', {
