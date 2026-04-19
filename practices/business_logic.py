@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import requests
 
 _NPPES_API_URL = 'https://npiregistry.cms.hhs.gov/api/'
@@ -15,6 +17,65 @@ def nppes_search(params: dict) -> dict:
     response = requests.get(_NPPES_API_URL, params=payload, timeout=10)
     response.raise_for_status()
     return response.json()
+
+
+_DEA_EXTRACT_RESULT_KEYS = {
+    'dea_registration_number', 'this_registration_expires', 'issue_date',
+    'business_activity', 'schedules', 'full_name', 'company_name',
+    'street_address', 'city', 'state', 'postal_code',
+}
+
+
+def _parse_date(value: str):
+    for fmt in ('%m-%d-%Y', '%Y-%m-%d'):
+        try:
+            return datetime.strptime(value, fmt).date()
+        except (ValueError, TypeError):
+            continue
+    return None
+
+
+def apply_dea_extraction(response: dict, credential) -> None:
+    """
+    Validate that response matches the dea_extract_response.json shape,
+    then update the DeaCredential record with the extracted values.
+
+    Raises ValueError if the response structure is invalid.
+    """
+    if 'result' not in response:
+        raise ValueError("DEA extraction response missing 'result' key.")
+
+    outer_result = response['result']
+
+    if 'result' not in outer_result or not isinstance(
+        outer_result['result'], list
+    ):
+        raise ValueError(
+            "DEA extraction response missing 'result.result' list."
+        )
+
+    rows = outer_result['result']
+    if not rows:
+        raise ValueError("DEA extraction returned no rows.")
+
+    row = rows[0]
+    missing = _DEA_EXTRACT_RESULT_KEYS - row.keys()
+    if missing:
+        raise ValueError(
+            f"DEA extraction result missing expected keys: {missing}"
+        )
+
+    credential.license_number = row['dea_registration_number']
+
+    expiration = _parse_date(row['this_registration_expires'])
+    if expiration:
+        credential.expiration_date = expiration
+
+    issue = _parse_date(row['issue_date'])
+    if issue:
+        credential.enumeration_date = issue
+
+    credential.save()
 
 
 def autofill(npi_number: str, credential, provider) -> None:

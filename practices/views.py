@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .business_logic import autofill, nppes_search
+from .business_logic import apply_dea_extraction, autofill, nppes_search
 from .models import Practice, Provider, ProviderByPractice
 from .serializers import (
     DeaCertificateUploadSerializer,
@@ -115,7 +115,19 @@ class DeaCertificateUploadView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
+        from django.conf import settings
+        from simple_dag_orchestrator.services.aws_lambda import (
+            invoke_dea_license_extraction,
+        )
         provider = Provider.objects.get(pk=self.kwargs['provider_id'])
         credential = serializer.save()
         provider.dea_credential = credential
         provider.save()
+
+        storage_location = settings.STORAGES['default']['OPTIONS']['location']
+        source_key = f'{storage_location}/{credential.file.name}'
+        response = invoke_dea_license_extraction(
+            uuid=str(credential.id),
+            source_key=source_key,
+        )
+        apply_dea_extraction(response, credential)

@@ -1,0 +1,26 @@
+{
+  "etl": "reducto_extract",
+  "result": {
+    "source": "s3://vidaverified-backend/media/credentials/DEA_Test_License_Page_1.pdf",
+    "destination": "s3://vidaverified-datalake/reducto_extract/DEA_Test_License_Page_1.parquet",
+    "job_id": "c53d6e92-81a0-4b20-aeb5-a6d47c959b97",
+    "pages_processed": 1,
+    "credits_used": 4,
+    "rows_written": 1,
+    "result": [
+      {
+        "dea_registration_number": "AB1234567",
+        "this_registration_expires": "12-31-2029",
+        "issue_date": "12-24-2025",
+        "business_activity": "MLP-NURSE PRACTITIONER",
+        "schedules": "3,3N,4,5",
+        "full_name": "Tom Cruise",
+        "company_name": "Top Gun Healthcare LTD",
+        "street_address": "13 Mission Impossible Blvd.",
+        "city": "Hollywood",
+        "state": "CA",
+        "postal_code": "12345"
+      }
+    ]
+  }
+}
