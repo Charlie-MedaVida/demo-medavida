@@ -1,0 +1,143 @@
+{
+    "result_count": 1,
+    "results": [
+        {
+            "addresses": [
+                {
+                    "address_1": "1255 HIGHWAY 54 W",
+                    "address_purpose": "LOCATION",
+                    "address_type": "DOM",
+                    "city": "FAYETTEVILLE",
+                    "country_code": "US",
+                    "country_name": "United States",
+                    "postal_code": "302144526",
+                    "state": "GA",
+                    "telephone_number": "404-367-3014"
+                },
+                {
+                    "address_1": "5325 FARAON ST",
+                    "address_purpose": "MAILING",
+                    "address_type": "DOM",
+                    "city": "SAINT JOSEPH",
+                    "country_code": "US",
+                    "country_name": "United States",
+                    "fax_number": "816-271-6789",
+                    "postal_code": "645063488",
+                    "state": "MO",
+                    "telephone_number": "816-271-6406"
+                }
+            ],
+            "basic": {
+                "certification_date": "2022-08-25",
+                "credential": "MD",
+                "enumeration_date": "2012-05-22",
+                "first_name": "MANJIT",
+                "last_name": "PAKKALA",
+                "last_updated": "2022-08-25",
+                "sex": "M",
+                "sole_proprietor": "NO",
+                "status": "A"
+            },
+            "created_epoch": "1337713203000",
+            "endpoints": [],
+            "enumeration_type": "NPI-1",
+            "identifiers": [
+                {
+                    "code": "05",
+                    "desc": "MEDICAID",
+                    "identifier": "1821358003",
+                    "issuer": null,
+                    "state": "MO"
+                },
+                {
+                    "code": "05",
+                    "desc": "MEDICAID",
+                    "identifier": "1821358003",
+                    "issuer": null,
+                    "state": "IA"
+                },
+                {
+                    "code": "05",
+                    "desc": "MEDICAID",
+                    "identifier": "201125270A",
+                    "issuer": null,
+                    "state": "KS"
+                },
+                {
+                    "code": "01",
+                    "desc": "Other (non-Medicare)",
+                    "identifier": "P01527145",
+                    "issuer": "RR Medicare",
+                    "state": "MO"
+                }
+            ],
+            "last_updated_epoch": "1661442468000",
+            "number": "1821358003",
+            "other_names": [],
+            "practiceLocations": [
+                {
+                    "address_1": "5325 FARAON ST",
+                    "address_purpose": "LOCATION",
+                    "address_type": "DOM",
+                    "city": "SAINT JOSEPH",
+                    "country_code": "US",
+                    "country_name": "United States",
+                    "fax_number": "816-271-7986",
+                    "postal_code": "64506",
+                    "state": "MO",
+                    "telephone_number": "816-271-6406"
+                }
+            ],
+            "taxonomies": [
+                {
+                    "code": "207R00000X",
+                    "desc": "Internal Medicine",
+                    "license": "2015021659",
+                    "primary": false,
+                    "state": "MO",
+                    "taxonomy_group": ""
+                },
+                {
+                    "code": "207R00000X",
+                    "desc": "Internal Medicine",
+                    "license": "005442",
+                    "primary": false,
+                    "state": "GA",
+                    "taxonomy_group": ""
+                },
+                {
+                    "code": "207R00000X",
+                    "desc": "Internal Medicine",
+                    "license": "0439088",
+                    "primary": false,
+                    "state": "KS",
+                    "taxonomy_group": ""
+                },
+                {
+                    "code": "208M00000X",
+                    "desc": "Hospitalist",
+                    "license": "73446",
+                    "primary": false,
+                    "state": "GA",
+                    "taxonomy_group": ""
+                },
+                {
+                    "code": "208M00000X",
+                    "desc": "Hospitalist",
+                    "license": "2015021659",
+                    "primary": false,
+                    "state": "MO",
+                    "taxonomy_group": ""
+                },
+                {
+                    "code": "207R00000X",
+                    "desc": "Internal Medicine",
+                    "license": "73446",
+                    "primary": true,
+                    "state": "GA",
+                    "taxonomy_group": ""
+                }
+            ]
+        }
+    ]
+}

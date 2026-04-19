@@ -1,9 +1,9 @@
-import requests
 from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .business_logic import autofill, nppes_search
 from .models import Practice, Provider, ProviderByPractice
 from .serializers import (
     DeaCertificateUploadSerializer,
@@ -89,6 +89,7 @@ class NpiCredentialCreateView(generics.CreateAPIView):
         credential = serializer.save()
         provider.npi_credential = credential
         provider.save()
+        autofill(credential.license_number, credential, provider)
 
 
 class DeaCredentialCreateView(generics.CreateAPIView):
@@ -102,26 +103,11 @@ class DeaCredentialCreateView(generics.CreateAPIView):
         provider.save()
 
 
-_NPPES_API_URL = 'https://npiregistry.cms.hhs.gov/api/'
-_NPPES_PARAMS = {
-    'number', 'first_name', 'last_name', 'use_first_name_alias',
-    'organization_name', 'city', 'state', 'postal_code', 'country_code',
-    'address_purpose', 'enumeration_type', 'taxonomy_description',
-    'credentials', 'sole_proprietor', 'limit', 'offset',
-}
-
-
 class NppesSearchView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        params = {
-            k: v for k, v in request.query_params.items()
-            if k in _NPPES_PARAMS
-        }
-        params['version'] = '2.1'
-        response = requests.get(_NPPES_API_URL, params=params, timeout=10)
-        return Response(response.json(), status=response.status_code)
+        return Response(nppes_search(request.query_params))
 
 
 class DeaCertificateUploadView(generics.CreateAPIView):
