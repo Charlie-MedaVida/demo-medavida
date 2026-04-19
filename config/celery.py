@@ -10,9 +10,4 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    'scheduled_load_monitors_dag': {
-        'task': 'load_monitors_dag',
-        'schedule': crontab(minute='*/3'),
-        'args': (),
-    },
 }
