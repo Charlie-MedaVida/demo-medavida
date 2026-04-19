@@ -10,6 +10,10 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
+    'refresh-verification-views-every-3-minutes': {
+        'task': 'vida_verified.tasks.refresh_verification_views',
+        'schedule': crontab(minute='*/3'),
+    },
     'run-periodic-npi-verification-daily': {
         'task': (
             'simple_dag_orchestrator.dags'
