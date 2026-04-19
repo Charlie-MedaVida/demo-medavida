@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('practices', '0017_provider_ssn_zip_code'),
-        ('vida_verified', '0025_npicredential_deacredential'),
+        ('vida_verified', '0025b_copy_credentials_from_practices'),
     ]
 
     operations = [
