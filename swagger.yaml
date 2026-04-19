@@ -956,6 +956,270 @@ paths:
         '401':
           description: Unauthorized
 
+  # ── NPI Credentials ───────────────────────────────────────────────────────
+
+  /api/v1/npi-credentials/:
+    get:
+      tags: [Credentials]
+      summary: List all NPI credentials
+      responses:
+        '200':
+          description: List of NPI credentials
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NpiCredential'
+        '401':
+          description: Unauthorized
+
+    post:
+      tags: [Credentials]
+      summary: Create an NPI credential
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CredentialWriteRequest'
+      responses:
+        '201':
+          description: NPI credential created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NpiCredential'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+
+  /api/v1/npi-credentials/{id}/:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      tags: [Credentials]
+      summary: Retrieve an NPI credential
+      responses:
+        '200':
+          description: NPI credential detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NpiCredential'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+    put:
+      tags: [Credentials]
+      summary: Replace an NPI credential
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CredentialWriteRequest'
+      responses:
+        '200':
+          description: Updated NPI credential
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NpiCredential'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+    patch:
+      tags: [Credentials]
+      summary: Partially update an NPI credential
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CredentialWriteRequest'
+      responses:
+        '200':
+          description: Updated NPI credential
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NpiCredential'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+    delete:
+      tags: [Credentials]
+      summary: Delete an NPI credential
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+  # ── DEA Credentials ───────────────────────────────────────────────────────
+
+  /api/v1/dea-credentials/:
+    get:
+      tags: [Credentials]
+      summary: List all DEA credentials
+      responses:
+        '200':
+          description: List of DEA credentials
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeaCredential'
+        '401':
+          description: Unauthorized
+
+    post:
+      tags: [Credentials]
+      summary: Create a DEA credential
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CredentialWriteRequest'
+      responses:
+        '201':
+          description: DEA credential created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeaCredential'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+
+  /api/v1/dea-credentials/{id}/:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      tags: [Credentials]
+      summary: Retrieve a DEA credential
+      responses:
+        '200':
+          description: DEA credential detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeaCredential'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+    put:
+      tags: [Credentials]
+      summary: Replace a DEA credential
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CredentialWriteRequest'
+      responses:
+        '200':
+          description: Updated DEA credential
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeaCredential'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+    patch:
+      tags: [Credentials]
+      summary: Partially update a DEA credential
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CredentialWriteRequest'
+      responses:
+        '200':
+          description: Updated DEA credential
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeaCredential'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+    delete:
+      tags: [Credentials]
+      summary: Delete a DEA credential
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
   # ── Practices ──────────────────────────────────────────────────────────────
 
   /api/v1/practices/:

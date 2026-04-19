@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django_materialized_view.base_model import MaterializedViewModel
 
 
 class Practice(models.Model):
@@ -77,7 +78,6 @@ class Provider(models.Model):
         return f'{self.first_name} {self.last_name}'
 
 
-
 class ProviderByPractice(models.Model):
     class TypeChoices(models.TextChoices):
         DEFAULT = 'default', 'Default'
@@ -104,3 +104,34 @@ class ProviderByPractice(models.Model):
 
     def __str__(self):
         return f'{self.provider} — {self.practice} ({self.type})'
+
+
+class ProviderVerificationView(MaterializedViewModel):
+    create_pkey_index = True
+
+    id = models.UUIDField(primary_key=True, editable=False)
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
+    email = models.EmailField()
+    phone_number = models.CharField(max_length=20)
+    title = models.CharField(max_length=100)
+    specialty = models.CharField(max_length=255)
+    npi_verification_status = models.CharField(max_length=20, null=True)
+    dea_verification_status = models.CharField(max_length=20, null=True)
+    npi_credential_id = models.UUIDField(null=True)
+    npi_license_number = models.CharField(max_length=100, null=True)
+    npi_verified = models.BooleanField(null=True)
+    npi_checked_at = models.DateTimeField(null=True)
+    npi_enumeration_date = models.DateField(null=True)
+    npi_expiration_date = models.DateField(null=True)
+    npi_error_content = models.TextField(null=True)
+    dea_credential_id = models.UUIDField(null=True)
+    dea_license_number = models.CharField(max_length=100, null=True)
+    dea_verified = models.BooleanField(null=True)
+    dea_checked_at = models.DateTimeField(null=True)
+    dea_enumeration_date = models.DateField(null=True)
+    dea_expiration_date = models.DateField(null=True)
+    dea_error_content = models.TextField(null=True)
+
+    class Meta:
+        managed = False

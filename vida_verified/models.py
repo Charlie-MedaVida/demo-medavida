@@ -77,3 +77,5 @@ class NpiVerificationView(MaterializedViewModel):
 
     class Meta:
         managed = False
+
+
