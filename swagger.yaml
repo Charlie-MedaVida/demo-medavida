@@ -340,6 +340,11 @@ components:
           type: string
           enum: [default, medical_director]
 
+    VerificationStatus:
+      type: string
+      nullable: true
+      enum: [running, verified, failed]
+
     ProviderSummary:
       type: object
       description: Flat provider representation used when nested inside a Practice
@@ -366,6 +371,12 @@ components:
         specialty:
           type: string
           maxLength: 255
+        requires_npi:
+          type: boolean
+          readOnly: true
+        requires_dea:
+          type: boolean
+          readOnly: true
 
     Provider:
       type: object
@@ -393,6 +404,12 @@ components:
         specialty:
           type: string
           maxLength: 255
+        ssn:
+          type: string
+          maxLength: 9
+        zip_code:
+          type: string
+          maxLength: 10
         provider_practices:
           type: array
           readOnly: true
@@ -416,6 +433,14 @@ components:
           type: boolean
           readOnly: true
           description: True if the provider's title is MD
+        npi_verification_status:
+          readOnly: true
+          allOf:
+            - $ref: '#/components/schemas/VerificationStatus'
+        dea_verification_status:
+          readOnly: true
+          allOf:
+            - $ref: '#/components/schemas/VerificationStatus'
 
     ProviderWriteRequest:
       type: object
@@ -439,6 +464,12 @@ components:
         specialty:
           type: string
           maxLength: 255
+        ssn:
+          type: string
+          maxLength: 9
+        zip_code:
+          type: string
+          maxLength: 10
 
     Practice:
       type: object
@@ -1343,3 +1374,177 @@ paths:
           description: Unauthorized
         '404':
           description: Provider not found
+
+  /api/v1/providers/{provider_id}/dea-credentials/certificate/:
+    parameters:
+      - name: provider_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    post:
+      tags: [Providers]
+      summary: Upload a DEA certificate PDF for a provider
+      description: >
+        Uploads a DEA certificate PDF to S3, creates a new DeaCredential,
+        links it to the Provider, and asynchronously dispatches the
+        run_dea_license_extraction Celery task to extract fields from the PDF.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: DEA certificate uploaded and extraction task queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeaCredential'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Provider not found
+
+  /api/v1/providers/{provider_id}/verify:
+    parameters:
+      - name: provider_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    post:
+      tags: [Providers]
+      summary: Trigger provider credential verification
+      description: >
+        Sets `npi_verification_status` and `dea_verification_status` to
+        `running`, dispatches the `verify_provider` Celery task, and returns
+        the updated Provider immediately. The task asynchronously runs an NPPES
+        NPI search and a DEA crawler check, updating the status fields to
+        `verified` or `failed` upon completion.
+      responses:
+        '200':
+          description: Verification task queued — returns current provider state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Provider not found
+
+  # ── NPPES Search ───────────────────────────────────────────────────────────
+
+  /api/v1/nppes/search:
+    get:
+      tags: [Providers]
+      summary: Proxy search against the NPPES NPI Registry API v2.1
+      description: >
+        Forwards supported query parameters to the NPPES NPI Registry API
+        and returns the response unchanged. Unknown parameters are silently
+        dropped.
+      parameters:
+        - name: number
+          in: query
+          schema:
+            type: string
+          description: 10-digit NPI number for a direct lookup
+        - name: first_name
+          in: query
+          schema:
+            type: string
+          description: Individual provider first name (trailing wildcards supported)
+        - name: last_name
+          in: query
+          schema:
+            type: string
+          description: Individual provider last name (trailing wildcards supported)
+        - name: organization_name
+          in: query
+          schema:
+            type: string
+          description: Organization name (trailing wildcards supported)
+        - name: enumeration_type
+          in: query
+          schema:
+            type: string
+            enum: [NPI-1, NPI-2]
+          description: NPI-1 for individuals, NPI-2 for organizations
+        - name: city
+          in: query
+          schema:
+            type: string
+        - name: state
+          in: query
+          schema:
+            type: string
+        - name: postal_code
+          in: query
+          schema:
+            type: string
+        - name: country_code
+          in: query
+          schema:
+            type: string
+        - name: address_purpose
+          in: query
+          schema:
+            type: string
+            enum: [location, mailing, primary, secondary]
+        - name: taxonomy_description
+          in: query
+          schema:
+            type: string
+        - name: credentials
+          in: query
+          schema:
+            type: string
+        - name: sole_proprietor
+          in: query
+          schema:
+            type: boolean
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1200
+            default: 10
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: NPPES search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result_count:
+                    type: integer
+                  results:
+                    type: array
+                    items:
+                      type: object
+        '401':
+          description: Unauthorized
