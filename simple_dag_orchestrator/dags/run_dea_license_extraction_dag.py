@@ -2,7 +2,7 @@ from celery import shared_task
 from django.conf import settings
 
 from practices.business_logic import apply_dea_extraction
-from practices.models import DeaCredential
+from vida_verified.models import DeaCredential
 from simple_dag_orchestrator.services.aws_lambda import (
     invoke_dea_license_extraction,
 )

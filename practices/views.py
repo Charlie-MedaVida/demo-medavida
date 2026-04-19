@@ -107,8 +107,10 @@ class ProviderVerifyView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, provider_id):
-        from simple_dag_orchestrator.dags import verify_provider
-        provider = Provider.objects.get(pk=provider_id)
+        from .signals import provider_verify_requested
+        provider = Provider.objects.select_related(
+            'npi_credential', 'dea_credential',
+        ).get(pk=provider_id)
         provider.npi_verification_status = (
             Provider.VerificationStatus.RUNNING
         )
@@ -116,7 +118,10 @@ class ProviderVerifyView(APIView):
             Provider.VerificationStatus.RUNNING
         )
         provider.save()
-        verify_provider.delay(str(provider_id))
+        provider_verify_requested.send(
+            sender=Provider,
+            provider=provider,
+        )
         return Response(ProviderSerializer(provider).data)
 
 

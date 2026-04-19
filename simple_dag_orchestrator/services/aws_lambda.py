@@ -121,6 +121,20 @@ def invoke_load_monitor_results(uuids: list[str]) -> dict:
     )
 
 
+def invoke_load_npi_verifications(uuids: list[str]) -> dict:
+    return invoke_etls(
+        etl='load_npi_verifications',
+        params={'uuids': uuids},
+    )
+
+
+def invoke_load_dea_verifications(uuids: list[str]) -> dict:
+    return invoke_etls(
+        etl='load_dea_verifications',
+        params={'uuids': uuids},
+    )
+
+
 def invoke_dea_license_extraction(uuid: str, source_key: str) -> dict:
     return invoke_etls(
         etl='reducto_extract',

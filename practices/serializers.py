@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
+from vida_verified.models import DeaCredential, NpiCredential
+
 from .models import (
-    DeaCredential,
-    NpiCredential,
     Practice,
     Provider,
     ProviderByPractice,

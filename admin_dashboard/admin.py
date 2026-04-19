@@ -1,126 +1,20 @@
-from admin_extra_buttons.api import ExtraButtonsMixin, button
 from django.contrib import admin
-from django.contrib import messages
 from rest_framework_api_key.models import APIKey
 
 from practices.models import (
-    DeaCredential,
-    NpiCredential,
     Practice,
     Provider,
     ProviderByPractice,
 )
-from vida_verified.models import (
-    MonitorRequest,
-    MonitorResults,
-    ReportRequest,
-    ReportResults,
-)
 
 from .forms import (
-    MonitorRequestAddForm,
-    MonitorRequestChangeForm,
-    MonitorResultsChangeForm,
     PracticeAddForm,
     PracticeChangeForm,
     ProviderAddForm,
     ProviderChangeForm,
-    ReportChangeForm,
-    ReportRequestAddForm,
-    ReportRequestChangeForm,
 )
 
 admin.site.unregister(APIKey)
-
-
-class BaseRequestAdmin(admin.ModelAdmin):
-    add_form_class = None
-    change_form_class = None
-
-    add_fieldsets = (
-        (None, {
-            'fields': (
-                ('first_name', 'last_name'),
-                'city',
-                'state',
-                'postal_code',
-                'ssn',
-                'ein',
-                'id_type',
-            ),
-        }),
-    )
-
-    def get_form(self, request, obj=None, **kwargs):
-        if obj is None:
-            kwargs['form'] = self.add_form_class
-        else:
-            kwargs['form'] = self.change_form_class
-        return super().get_form(request, obj, **kwargs)
-
-    def get_fieldsets(self, request, obj=None):
-        if obj is None:
-            return self.add_fieldsets
-        return super().get_fieldsets(request, obj)
-
-
-class BaseResultsAdmin(admin.ModelAdmin):
-    def has_add_permission(self, request):
-        return False
-
-
-@admin.register(ReportRequest)
-class ReportRequestAdmin(BaseRequestAdmin):
-    add_form_class = ReportRequestAddForm
-    change_form_class = ReportRequestChangeForm
-
-
-@admin.register(MonitorRequest)
-class MonitorRequestAdmin(BaseRequestAdmin):
-    add_form_class = MonitorRequestAddForm
-    change_form_class = MonitorRequestChangeForm
-
-
-@admin.register(ReportResults)
-class ReportResultsAdmin(BaseResultsAdmin):
-    form = ReportChangeForm
-    readonly_fields = ('sam_exclusions_results', 'npi_registration_results')
-
-
-@admin.register(MonitorResults)
-class MonitorResultsAdmin(BaseResultsAdmin):
-    form = MonitorResultsChangeForm
-    readonly_fields = ('sam_exclusions_results', 'npi_registration_results')
-
-
-@admin.register(NpiCredential)
-class NpiCredentialAdmin(admin.ModelAdmin):
-    fields = (
-        'license_number', 'last_checked_at',
-        'enumeration_date', 'expiration_date', 'file',
-    )
-
-
-@admin.register(DeaCredential)
-class DeaCredentialAdmin(ExtraButtonsMixin, admin.ModelAdmin):
-    fields = (
-        'license_number', 'last_checked_at',
-        'enumeration_date', 'expiration_date', 'file',
-    )
-
-    @button(
-        label='Run DEA License Extraction',
-        change_form=True,
-        html_attrs={'style': 'background:#417690;color:#fff;'},
-    )
-    def run_extraction(self, request, pk):
-        from simple_dag_orchestrator.dags import run_dea_license_extraction
-        run_dea_license_extraction.delay(str(pk))
-        self.message_user(
-            request,
-            'DEA license extraction task queued.',
-            messages.SUCCESS,
-        )
 
 
 class ProviderByPracticeInline(admin.TabularInline):
