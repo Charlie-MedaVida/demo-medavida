@@ -1,4 +1,7 @@
 from .periodic_load_monitors_dag import load_monitors_dag  # noqa: F401
+from .periodic_npi_verification_dag import (  # noqa: F401
+    run_periodic_npi_verification,
+)
 from .run_dea_license_extraction_dag import (  # noqa: F401
     run_dea_license_extraction,
 )

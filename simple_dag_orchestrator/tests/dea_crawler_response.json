@@ -1,0 +1,15 @@
+{
+  "success": false,
+  "error": "\n\t\t\t\t\tLogin was not successful:\n\t\t\t\t\tThe information provided does not match our records.\n\t\t\t\t",
+  "screenshots_s3_folder": "s3://vidaverified--raw-document-data/dea/credentials/screenshots/",
+  "screenshot_file_names": [
+    "dea_BORTLES_1.png",
+    "dea_BORTLES_2.png",
+    "dea_BORTLES_3.png",
+    "dea_BORTLES_4.png",
+    "dea_BORTLES_5.png",
+    "dea_BORTLES_6.png",
+    "dea_BORTLES_7.png",
+    "dea_BORTLES_8.png"
+  ]
+}

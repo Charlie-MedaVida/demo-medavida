@@ -23,5 +23,3 @@ class NpiCredential(Credential):
 class DeaCredential(Credential):
     def __str__(self):
         return f'DEA {self.license_number}'
-
-

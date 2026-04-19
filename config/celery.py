@@ -10,4 +10,12 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
+    'run-periodic-npi-verification-daily': {
+        'task': (
+            'simple_dag_orchestrator.dags'
+            '.periodic_npi_verification_dag'
+            '.run_periodic_npi_verification'
+        ),
+        'schedule': crontab(hour=2, minute=0),
+    },
 }
