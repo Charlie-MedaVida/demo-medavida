@@ -1,6 +1,9 @@
+import logging
 from datetime import datetime
 
 import requests
+
+logger = logging.getLogger(__name__)
 
 _NPPES_API_URL = 'https://npiregistry.cms.hhs.gov/api/'
 _NPPES_PARAMS = {
@@ -36,46 +39,102 @@ def _parse_date(value: str):
 
 
 def apply_dea_extraction(response: dict, credential) -> None:
-    """
-    Validate that response matches the dea_extract_response.json shape,
-    then update the DeaCredential record with the extracted values.
+    logger.info(
+        'apply_dea_extraction called. credential_id=%s raw_response=%s',
+        credential.id, response,
+    )
 
-    Raises ValueError if the response structure is invalid.
-    """
     if 'result' not in response:
+        logger.error(
+            'apply_dea_extraction: missing top-level result key. '
+            'credential_id=%s response_keys=%s',
+            credential.id, list(response.keys()),
+        )
         raise ValueError("DEA extraction response missing 'result' key.")
 
     outer_result = response['result']
+    logger.debug(
+        'apply_dea_extraction: outer_result keys=%s credential_id=%s',
+        list(outer_result.keys()), credential.id,
+    )
 
     if 'result' not in outer_result or not isinstance(
         outer_result['result'], list
     ):
+        logger.error(
+            'apply_dea_extraction: missing or invalid result.result list. '
+            'credential_id=%s outer_result_keys=%s',
+            credential.id, list(outer_result.keys()),
+        )
         raise ValueError(
             "DEA extraction response missing 'result.result' list."
         )
 
     rows = outer_result['result']
     if not rows:
+        logger.error(
+            'apply_dea_extraction: result.result list is empty. '
+            'credential_id=%s',
+            credential.id,
+        )
         raise ValueError("DEA extraction returned no rows.")
 
     row = rows[0]
+    logger.info(
+        'apply_dea_extraction: extracted row. credential_id=%s row=%s',
+        credential.id, row,
+    )
+
     missing = _DEA_EXTRACT_RESULT_KEYS - row.keys()
     if missing:
+        logger.error(
+            'apply_dea_extraction: row missing expected keys=%s '
+            'credential_id=%s',
+            missing, credential.id,
+        )
         raise ValueError(
             f"DEA extraction result missing expected keys: {missing}"
         )
 
     credential.license_number = row['dea_registration_number']
+    logger.info(
+        'apply_dea_extraction: set license_number=%s credential_id=%s',
+        credential.license_number, credential.id,
+    )
 
     expiration = _parse_date(row['this_registration_expires'])
     if expiration:
         credential.expiration_date = expiration
+        logger.info(
+            'apply_dea_extraction: set expiration_date=%s credential_id=%s',
+            expiration, credential.id,
+        )
+    else:
+        logger.warning(
+            'apply_dea_extraction: could not parse expiration_date from '
+            'value=%r credential_id=%s',
+            row['this_registration_expires'], credential.id,
+        )
 
     issue = _parse_date(row['issue_date'])
     if issue:
         credential.enumeration_date = issue
+        logger.info(
+            'apply_dea_extraction: set enumeration_date=%s credential_id=%s',
+            issue, credential.id,
+        )
+    else:
+        logger.warning(
+            'apply_dea_extraction: could not parse enumeration_date from '
+            'value=%r credential_id=%s',
+            row['issue_date'], credential.id,
+        )
 
     credential.save()
+    logger.info(
+        'apply_dea_extraction: credential saved. credential_id=%s',
+        credential.id,
+    )
 
 
 def autofill(npi_number: str, credential, provider) -> None:
