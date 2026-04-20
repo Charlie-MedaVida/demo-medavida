@@ -2,6 +2,7 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from .views import (
+    CurrentPracticeView,
     DeaCertificateUploadView,
     DeaCredentialCreateView,
     NpiCredentialCreateView,
@@ -20,6 +21,11 @@ router.register('practices', PracticeViewSet, basename='practice')
 router.register('providers', ProviderViewSet, basename='provider')
 
 urlpatterns = router.urls + [
+    path(
+        'practices/current',
+        CurrentPracticeView.as_view(),
+        name='practice-current',
+    ),
     path(
         'nppes/search',
         NppesSearchView.as_view(),

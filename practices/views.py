@@ -1,4 +1,5 @@
 from rest_framework import generics, viewsets
+from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -123,6 +124,19 @@ class ProviderVerifyView(APIView):
             provider=provider,
         )
         return Response(ProviderSerializer(provider).data)
+
+
+class CurrentPracticeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            practice = request.user.profile.practice
+        except AttributeError:
+            raise NotFound('No practice associated with this account.')
+        if practice is None:
+            raise NotFound('No practice associated with this account.')
+        return Response(PracticeSerializer(practice).data)
 
 
 class NppesSearchView(APIView):
