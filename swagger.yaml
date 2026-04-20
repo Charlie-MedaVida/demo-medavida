@@ -1222,6 +1222,23 @@ paths:
 
   # ── Practices ──────────────────────────────────────────────────────────────
 
+  /api/v1/practices/current:
+    get:
+      tags: [Practices]
+      summary: Get the current user's practice
+      description: Returns the practice associated with the authenticated user's profile.
+      responses:
+        '200':
+          description: The authenticated user's practice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Practice'
+        '401':
+          description: Unauthorized
+        '404':
+          description: No practice associated with this account
+
   /api/v1/practices/:
     get:
       tags: [Practices]
