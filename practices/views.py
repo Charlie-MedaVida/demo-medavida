@@ -1,7 +1,9 @@
-import uuid
 from datetime import date
 
-from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
+from weasyprint import HTML as WeasyHTML
 from rest_framework import generics, viewsets
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated
@@ -173,11 +175,20 @@ class PracticeReportView(generics.GenericAPIView):
         provider_entries = [_provider_entry(p) for p in providers]
 
         total = len(provider_entries)
-        verified_count = sum(1 for e in provider_entries if e['overall_status'] == 'verified')
-        in_progress_count = sum(1 for e in provider_entries if e['overall_status'] == 'running')
-        pending_count = sum(1 for e in provider_entries if e['overall_status'] is None)
+        verified_count = sum(
+            1 for e in provider_entries if e['overall_status'] == 'verified'
+        )
+        in_progress_count = sum(
+            1 for e in provider_entries if e['overall_status'] == 'running'
+        )
+        pending_count = sum(
+            1 for e in provider_entries if e['overall_status'] is None
+        )
 
         today = date.today()
+        report_id = (
+            f'VV-{today.strftime("%Y-%m%d")}-{str(practice.id)[:4].upper()}'
+        )
         context = {
             'practice': practice,
             'providers': provider_entries,
@@ -186,9 +197,18 @@ class PracticeReportView(generics.GenericAPIView):
             'in_progress_count': in_progress_count,
             'pending_count': pending_count,
             'generated_date': today.strftime('%B %d, %Y'),
-            'report_id': f'VV-{today.strftime("%Y-%m%d")}-{str(practice.id)[:4].upper()}',
+            'report_id': report_id,
         }
-        return render(request, 'practices/verification_report.html', context)
+
+        html_string = render_to_string(
+            'practices/verification_report.html', context, request=request,
+        )
+        pdf_bytes = WeasyHTML(string=html_string).write_pdf()
+
+        filename = f'verification-report-{practice.id}.pdf'
+        response = HttpResponse(pdf_bytes, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
 
 
 class CurrentPracticeView(APIView):
