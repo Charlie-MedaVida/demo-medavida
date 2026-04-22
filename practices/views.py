@@ -132,8 +132,23 @@ class ProviderVerifyView(APIView):
         return Response(ProviderSerializer(provider).data)
 
 
+def _credential_row(label, source, credential):
+    if credential is None:
+        return None
+    status = (
+        getattr(credential, '_verification_status', None)
+        or 'pending'
+    )
+    return {
+        'label': label,
+        'source': source,
+        'license_number': credential.license_number or '—',
+        'expiration_date': credential.expiration_date,
+        'status': status,
+    }
+
+
 def _provider_entry(provider):
-    """Build the per-provider dict used by the report template."""
     statuses = [
         s for s in (
             provider.npi_verification_status,
@@ -153,6 +168,23 @@ def _provider_entry(provider):
     total_creds = max(len(statuses), 1)
     pct = round(verified_creds / total_creds * 100)
 
+    credentials = []
+    if provider.npi_credential:
+        npi = provider.npi_credential
+        npi._verification_status = provider.npi_verification_status
+        credentials.append(
+            _credential_row('NPI', 'NPPES', npi)
+        )
+    if provider.dea_credential:
+        dea = provider.dea_credential
+        dea._verification_status = provider.dea_verification_status
+        credentials.append(
+            _credential_row('DEA License', 'DEA Database', dea)
+        )
+
+    first = provider.first_name[0].upper() if provider.first_name else ''
+    last = provider.last_name[0].upper() if provider.last_name else ''
+
     return {
         'first_name': provider.first_name,
         'last_name': provider.last_name,
@@ -160,6 +192,8 @@ def _provider_entry(provider):
         'specialty': provider.specialty,
         'overall_status': overall,
         'completion_pct': pct,
+        'credentials': credentials,
+        'initials': f'{first}{last}',
     }
 
 

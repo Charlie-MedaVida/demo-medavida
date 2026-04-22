@@ -329,6 +329,196 @@
       font-size: 9px;
       color: #cbd5e1;
     }
+
+    /* ── Page break ─────────────────────────────────────────── */
+    .page-break {
+      page-break-before: always;
+      break-before: page;
+    }
+
+    /* ── Page 2 header bar ──────────────────────────────────── */
+    .p2-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 16px;
+      margin-bottom: 28px;
+    }
+    .p2-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .p2-header-divider {
+      width: 2px;
+      height: 28px;
+      background: #2bffec;
+      border-radius: 2px;
+    }
+    .p2-header-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .p2-header-meta {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+    .p2-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1;
+    }
+    .p2-logo-word {
+      font-family: MuseoModerno, sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      color: #000;
+      position: relative;
+      display: inline-block;
+    }
+    .p2-logo-dot {
+      width: 5px;
+      height: 5px;
+      background: #2bffec;
+      position: absolute;
+      top: 0;
+      right: -3px;
+    }
+    .p2-logo-sub {
+      font-family: Poppins, sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      color: #000;
+      letter-spacing: .04em;
+    }
+
+    /* ── Page 2 section title ───────────────────────────────── */
+    .p2-section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+    .p2-section-subtitle {
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 20px;
+    }
+
+    /* ── Provider detail card ───────────────────────────────── */
+    .provider-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .provider-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: #fff;
+    }
+    .provider-card-identity {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .provider-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #eff6ff;
+      color: #3b82f6;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .provider-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .provider-status-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+    .provider-meta {
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+    .provider-completion {
+      text-align: right;
+    }
+    .provider-pct {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .provider-pct.verified    { color: #059669; }
+    .provider-pct.running     { color: #d97706; }
+    .provider-pct.failed      { color: #dc2626; }
+    .provider-pct.pending     { color: #94a3b8; }
+    .provider-complete-label {
+      font-size: 9px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .provider-card-divider {
+      height: 1px;
+      background: #f1f5f9;
+      margin: 0 20px;
+    }
+
+    /* ── Credential table ───────────────────────────────────── */
+    .cred-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .cred-table thead tr {
+      background: #f8fafc;
+    }
+    .cred-table th {
+      font-size: 9px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding: 8px 20px;
+      text-align: left;
+    }
+    .cred-table tbody tr:nth-child(odd)  { background: #fff; }
+    .cred-table tbody tr:nth-child(even) { background: #fafbfc; }
+    .cred-table td {
+      padding: 10px 20px;
+      font-size: 11px;
+      color: #334155;
+      vertical-align: middle;
+    }
+    .cred-type {
+      font-size: 11px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .cred-source {
+      font-size: 9px;
+      color: #94a3b8;
+      margin-top: 1px;
+    }
+    .cred-id {
+      font-family: Cousine, monospace;
+      font-size: 11px;
+      color: #0f172a;
+    }
   </style>
 </head>
 <body>
@@ -489,6 +679,103 @@
     </div>
 
   </div><!-- /page-body -->
-</div><!-- /page -->
+</div><!-- /page 1 -->
+
+<!-- ═══════════════════════════════ PAGE 2 ═══════════════════════════════ -->
+<div class="page page-break">
+  <div class="page-body">
+
+    <!-- Page 2 header bar -->
+    <div class="p2-header">
+      <div class="p2-header-left">
+        <div class="p2-logo">
+          <span class="p2-logo-word">vida<span class="p2-logo-dot"></span></span>
+          <span class="p2-logo-sub">VERIFIED</span>
+        </div>
+        <div class="p2-header-divider"></div>
+        <span class="p2-header-title">Verification Report</span>
+      </div>
+      <span class="p2-header-meta">Generated {{ generated_date }} • Page 2</span>
+    </div>
+
+    <!-- Section title -->
+    <div class="p2-section-title">Provider Details</div>
+    <div class="p2-section-subtitle">Individual credential verification status for each provider</div>
+
+    <!-- Provider detail cards -->
+    {% for entry in providers %}
+    <div class="provider-card">
+      <div class="provider-card-header">
+        <div class="provider-card-identity">
+          <div class="provider-avatar">{{ entry.initials }}</div>
+          <div>
+            <div class="provider-name">{{ entry.title }} {{ entry.first_name }} {{ entry.last_name }}</div>
+            <div class="provider-status-line">
+              {% if entry.overall_status == "verified" %}
+                <span class="badge badge-verified">Verified</span>
+              {% elif entry.overall_status == "running" %}
+                <span class="badge badge-in-progress">In Progress</span>
+              {% elif entry.overall_status == "failed" %}
+                <span class="badge badge-failed">Failed</span>
+              {% else %}
+                <span class="badge badge-pending">Pending</span>
+              {% endif %}
+            </div>
+            <div class="provider-meta">{{ entry.specialty|default:"—" }}</div>
+          </div>
+        </div>
+        <div class="provider-completion">
+          <div class="provider-pct {{ entry.overall_status|default:'pending' }}">{{ entry.completion_pct }}%</div>
+          <div class="provider-complete-label">Complete</div>
+        </div>
+      </div>
+
+      {% if entry.credentials %}
+      <div class="provider-card-divider"></div>
+      <table class="cred-table">
+        <thead>
+          <tr>
+            <th>Credential Type</th>
+            <th>Value / ID</th>
+            <th>Expiry Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cred in entry.credentials %}
+          <tr>
+            <td>
+              <div class="cred-type">{{ cred.label }}</div>
+              <div class="cred-source">{{ cred.source }}</div>
+            </td>
+            <td><span class="cred-id">{{ cred.license_number }}</span></td>
+            <td>{{ cred.expiration_date|date:"M d, Y"|default:"—" }}</td>
+            <td>
+              {% if cred.status == "verified" %}
+                <span class="badge badge-verified">Verified</span>
+              {% elif cred.status == "running" %}
+                <span class="badge badge-in-progress">In Progress</span>
+              {% elif cred.status == "failed" %}
+                <span class="badge badge-failed">Failed</span>
+              {% else %}
+                <span class="badge badge-pending">Pending</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+    </div>
+    {% endfor %}
+
+    <!-- Footer -->
+    <div class="footer">
+      <span class="footer-legal">CONFIDENTIAL — This report is intended for authorized personnel only.</span>
+      <span class="footer-page">{{ report_id }} • Page 2</span>
+    </div>
+
+  </div><!-- /page-body -->
+</div><!-- /page 2 -->
 </body>
 </html>
