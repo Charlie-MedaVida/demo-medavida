@@ -6,6 +6,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Cousine&family=MuseoModerno:wght@700&family=Poppins:wght@700&display=swap" rel="stylesheet" />
   <title>Verification Report — {{ practice.name }}</title>
   <style>
+    @page {
+      size: 8.5in auto;
+      margin: 0;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -17,12 +22,9 @@
 
     /* ── Page shell ─────────────────────────────────────────── */
     .page {
-      width: 822px;
-      margin: 32px auto;
+      width: 8.5in;
+      margin: 0 auto;
       background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 24px rgba(0,0,0,.10);
     }
 
     .page-accent {
