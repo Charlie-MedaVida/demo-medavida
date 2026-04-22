@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (
     CurrentPracticeView,
+    PracticeReportView,
     DeaCertificateUploadView,
     DeaCredentialCreateView,
     NpiCredentialCreateView,
@@ -25,6 +26,11 @@ urlpatterns = router.urls + [
         'practices/current',
         CurrentPracticeView.as_view(),
         name='practice-current',
+    ),
+    path(
+        'practices/<uuid:practice_id>/report',
+        PracticeReportView.as_view(),
+        name='practice-report',
     ),
     path(
         'nppes/search',

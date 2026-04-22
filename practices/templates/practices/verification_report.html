@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Cousine&family=MuseoModerno:wght@700&family=Poppins:wght@700&display=swap" rel="stylesheet" />
+  <title>Verification Report — {{ practice.name }}</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Inter, sans-serif;
+      font-size: 14px;
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    /* ── Page shell ─────────────────────────────────────────── */
+    .page {
+      width: 822px;
+      margin: 32px auto;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,.10);
+    }
+
+    .page-accent {
+      height: 13px;
+      background: #2bffec;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .page-body {
+      padding: 40px 52px 32px;
+    }
+
+    /* ── Header row ─────────────────────────────────────────── */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 32px;
+    }
+
+    .logo {
+      line-height: 1;
+    }
+    .logo-word {
+      font-family: MuseoModerno, sans-serif;
+      font-weight: 700;
+      font-size: 48px;
+      color: #000;
+      position: relative;
+      display: inline-block;
+    }
+    .logo-dot {
+      width: 10px;
+      height: 10px;
+      background: #2bffec;
+      position: absolute;
+      top: 0;
+      right: -4px;
+    }
+    .logo-sub {
+      font-family: Poppins, sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      color: #000;
+      display: block;
+      text-align: center;
+      letter-spacing: .04em;
+    }
+
+    .header-meta {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .badge-confidential {
+      display: inline-block;
+      background: #fef2f2;
+      color: #dc2626;
+      font-weight: 700;
+      font-size: 9px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      align-self: flex-end;
+    }
+    .header-meta-date,
+    .header-meta-id {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+    .header-meta-id { color: #cbd5e1; }
+
+    /* ── Title block ────────────────────────────────────────── */
+    .report-title { margin-bottom: 16px; }
+    .report-title h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.1;
+    }
+    .report-title p {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 8px;
+    }
+
+    /* ── Alert banner ───────────────────────────────────────── */
+    .alert {
+      background: #fffae8;
+      border-radius: 10px;
+      padding: 13px 17px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .alert-icon {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      background: #fde68a;
+      border-radius: 6px;
+      border: 1.5px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .alert-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #000;
+    }
+    .alert-body {
+      font-size: 11px;
+      color: #000;
+      margin-top: 2px;
+    }
+
+    /* ── Card with section header ───────────────────────────── */
+    .card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .section-icon {
+      width: 30px;
+      height: 30px;
+      background: #eff6ff;
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .section-subtitle {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-top: 1px;
+    }
+
+    /* ── Practice info grid ─────────────────────────────────── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px 8px;
+    }
+    .info-field label {
+      font-size: 9px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .info-field .value {
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f172a;
+    }
+    .info-field .value.mono {
+      font-family: Cousine, monospace;
+      font-weight: 400;
+    }
+    .info-field.full-width { grid-column: 1 / -1; }
+
+    .contact-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #334155;
+      margin-top: 4px;
+    }
+    .contact-row svg { flex-shrink: 0; }
+
+    /* ── Summary stats ──────────────────────────────────────── */
+    .stats-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      margin-bottom: 10px;
+    }
+    .stats-row {
+      display: flex;
+      gap: 16px;
+    }
+    .stat-card {
+      flex: 1;
+      background: #fafbfc;
+      border-radius: 10px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stat-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .stat-icon.blue  { background: #eff6ff; }
+    .stat-icon.green { background: #ecfdf5; }
+    .stat-icon.amber { background: #fffbeb; }
+    .stat-icon.red   { background: #fef2f2; }
+
+    .stat-number {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .stat-desc {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    /* ── Provider index table ───────────────────────────────── */
+    .provider-table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .provider-table thead tr {
+      background: #f8fafc;
+    }
+    .provider-table th {
+      font-size: 9px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding: 9px 16px;
+      text-align: left;
+    }
+    .provider-table tbody tr:nth-child(odd)  { background: #fff; }
+    .provider-table tbody tr:nth-child(even) { background: #fafbfc; }
+    .provider-table td {
+      padding: 13px 16px;
+      font-size: 12px;
+      color: #334155;
+      vertical-align: middle;
+    }
+    .provider-table td.name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 5px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .badge-verified    { background: #ecfdf5; color: #059669; }
+    .badge-in-progress { background: #fffbeb; color: #d97706; }
+    .badge-failed      { background: #fef2f2; color: #dc2626; }
+    .badge-pending     { background: #f1f5f9; color: #64748b; }
+
+    .pct-verified    { color: #059669; font-weight: 700; }
+    .pct-in-progress { color: #d97706; font-weight: 700; }
+    .pct-failed      { color: #dc2626; font-weight: 700; }
+
+    /* ── Footer ─────────────────────────────────────────────── */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 20px;
+      border-top: 1px solid #e2e8f0;
+      margin-top: 8px;
+    }
+    .footer-legal {
+      font-size: 9px;
+      color: #cbd5e1;
+    }
+    .footer-page {
+      font-size: 9px;
+      color: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="page-accent"></div>
+  <div class="page-body">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">
+        <span class="logo-word">vida<span class="logo-dot"></span></span>
+        <span class="logo-sub">VERIFIED</span>
+      </div>
+      <div class="header-meta">
+        <span class="badge-confidential">Confidential</span>
+        <span class="header-meta-date">Generated: {{ generated_date }}</span>
+        <span class="header-meta-id">Report ID: {{ report_id }}</span>
+      </div>
+    </div>
+
+    <!-- Title -->
+    <div class="report-title">
+      <h1>Verification Report</h1>
+      <p>Comprehensive credential and compliance overview for all practice providers</p>
+    </div>
+
+    <!-- Alert: pending credentials -->
+    {% if pending_count > 0 %}
+    <div class="alert">
+      <div class="alert-icon">⚠</div>
+      <div>
+        <div class="alert-title">{{ pending_count }} credential{{ pending_count|pluralize }} pending verification</div>
+        <div class="alert-body">Verification is in progress. Status will update automatically once review is complete.</div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Practice Information -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-icon">🏢</div>
+        <div>
+          <div class="section-title">Practice Information</div>
+          <div class="section-subtitle">Business registration and contact details</div>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-field">
+          <label>Practice Name</label>
+          <div class="value">{{ practice.name|default:"—" }}</div>
+        </div>
+        <div class="info-field">
+          <label>Group NPI</label>
+          <div class="value mono">{{ practice.npi_number|default:"—" }}</div>
+        </div>
+        <div class="info-field">
+          <label>Tax ID</label>
+          <div class="value mono">{{ practice.tax_id|default:"—" }}</div>
+        </div>
+        <div class="info-field">
+          <label>Contact</label>
+          <div class="value">
+            {% if practice.phone_number %}
+            <div class="contact-row">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><rect x=".5" y=".5" width="10" height="10" rx="2" stroke="#94a3b8"/></svg>
+              {{ practice.phone_number }}
+            </div>
+            {% endif %}
+            {% if practice.email %}
+            <div class="contact-row">
+              <svg width="11" height="9" viewBox="0 0 11 9" fill="none"><rect x=".5" y=".5" width="10" height="8" rx="1.5" stroke="#94a3b8"/><path d="M1 1l4.5 4L10 1" stroke="#94a3b8"/></svg>
+              {{ practice.email }}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overview Summary -->
+    <div class="card">
+      <div class="stats-label">Overview Summary</div>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon blue">👥</div>
+          <div class="stat-number">{{ total_providers }}</div>
+          <div class="stat-desc">Total Providers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">✓</div>
+          <div class="stat-number">{{ verified_count }}</div>
+          <div class="stat-desc">Fully Verified</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon amber">⏳</div>
+          <div class="stat-number">{{ in_progress_count }}</div>
+          <div class="stat-desc">In Progress</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red">!</div>
+          <div class="stat-number">{{ pending_count }}</div>
+          <div class="stat-desc">Pending Credentials</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Provider Index -->
+    <div class="card">
+      <div class="stats-label">Provider Index</div>
+      <table class="provider-table">
+        <thead>
+          <tr>
+            <th>Provider</th>
+            <th>Specialty</th>
+            <th>Status</th>
+            <th>Complete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in providers %}
+          <tr>
+            <td class="name">{{ entry.title }} {{ entry.first_name }} {{ entry.last_name }}</td>
+            <td>{{ entry.specialty|default:"—" }}</td>
+            <td>
+              {% if entry.overall_status == "verified" %}
+                <span class="badge badge-verified">Verified</span>
+              {% elif entry.overall_status == "running" %}
+                <span class="badge badge-in-progress">In Progress</span>
+              {% elif entry.overall_status == "failed" %}
+                <span class="badge badge-failed">Failed</span>
+              {% else %}
+                <span class="badge badge-pending">Pending</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if entry.overall_status == "verified" %}
+                <span class="pct-verified">{{ entry.completion_pct }}%</span>
+              {% elif entry.overall_status == "running" %}
+                <span class="pct-in-progress">{{ entry.completion_pct }}%</span>
+              {% else %}
+                <span class="pct-failed">{{ entry.completion_pct }}%</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" style="text-align:center; color:#94a3b8; padding:24px;">No providers associated with this practice.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <span class="footer-legal">CONFIDENTIAL — This report is intended for authorized personnel only.</span>
+      <span class="footer-page">{{ report_id }}</span>
+    </div>
+
+  </div><!-- /page-body -->
+</div><!-- /page -->
+</body>
+</html>

@@ -1,3 +1,7 @@
+import uuid
+from datetime import date
+
+from django.shortcuts import get_object_or_404, render
 from rest_framework import generics, viewsets
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated
@@ -124,6 +128,67 @@ class ProviderVerifyView(APIView):
             provider=provider,
         )
         return Response(ProviderSerializer(provider).data)
+
+
+def _provider_entry(provider):
+    """Build the per-provider dict used by the report template."""
+    statuses = [
+        s for s in (
+            provider.npi_verification_status,
+            provider.dea_verification_status,
+        ) if s is not None
+    ]
+    if not statuses:
+        overall = None
+    elif all(s == 'verified' for s in statuses):
+        overall = 'verified'
+    elif any(s == 'failed' for s in statuses):
+        overall = 'failed'
+    else:
+        overall = 'running'
+
+    verified_creds = sum(1 for s in statuses if s == 'verified')
+    total_creds = max(len(statuses), 1)
+    pct = round(verified_creds / total_creds * 100)
+
+    return {
+        'first_name': provider.first_name,
+        'last_name': provider.last_name,
+        'title': provider.title,
+        'specialty': provider.specialty,
+        'overall_status': overall,
+        'completion_pct': pct,
+    }
+
+
+class PracticeReportView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, practice_id):
+        practice = get_object_or_404(Practice, pk=practice_id)
+        providers = Provider.objects.filter(
+            provider_practices__practice=practice,
+        ).select_related('npi_credential', 'dea_credential')
+
+        provider_entries = [_provider_entry(p) for p in providers]
+
+        total = len(provider_entries)
+        verified_count = sum(1 for e in provider_entries if e['overall_status'] == 'verified')
+        in_progress_count = sum(1 for e in provider_entries if e['overall_status'] == 'running')
+        pending_count = sum(1 for e in provider_entries if e['overall_status'] is None)
+
+        today = date.today()
+        context = {
+            'practice': practice,
+            'providers': provider_entries,
+            'total_providers': total,
+            'verified_count': verified_count,
+            'in_progress_count': in_progress_count,
+            'pending_count': pending_count,
+            'generated_date': today.strftime('%B %d, %Y'),
+            'report_id': f'VV-{today.strftime("%Y-%m%d")}-{str(practice.id)[:4].upper()}',
+        }
+        return render(request, 'practices/verification_report.html', context)
 
 
 class CurrentPracticeView(APIView):
