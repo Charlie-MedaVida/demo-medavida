@@ -7,7 +7,7 @@
   <title>Verification Report — {{ practice.name }}</title>
   <style>
     @page {
-      size: 8.5in auto;
+      size: 8.5in 11in;
       margin: 0;
     }
 
@@ -23,18 +23,25 @@
     /* ── Page shell ─────────────────────────────────────────── */
     .page {
       width: 8.5in;
+      height: 11in;
       margin: 0 auto;
       background: #fff;
+      display: flex;
+      flex-direction: column;
     }
 
     .page-accent {
       height: 13px;
       background: #2bffec;
       border-radius: 8px 8px 0 0;
+      flex-shrink: 0;
     }
 
     .page-body {
       padding: 40px 52px 32px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
 
     /* ── Header row ─────────────────────────────────────────── */
@@ -312,6 +319,11 @@
     .pct-in-progress { color: #d97706; font-weight: 700; }
     .pct-failed      { color: #dc2626; font-weight: 700; }
 
+    /* ── Content grows to fill page, pushing footer down ───── */
+    .page-content {
+      flex: 1;
+    }
+
     /* ── Footer ─────────────────────────────────────────────── */
     .footer {
       display: flex;
@@ -319,7 +331,7 @@
       align-items: center;
       padding-top: 20px;
       border-top: 1px solid #e2e8f0;
-      margin-top: 8px;
+      flex-shrink: 0;
     }
     .footer-legal {
       font-size: 9px;
@@ -526,6 +538,7 @@
   <div class="page-accent"></div>
   <div class="page-body">
 
+    <div class="page-content">
     <!-- Header -->
     <div class="header">
       <div class="logo">
@@ -672,6 +685,8 @@
       </table>
     </div>
 
+    </div><!-- /page-content -->
+
     <!-- Footer -->
     <div class="footer">
       <span class="footer-legal">CONFIDENTIAL — This report is intended for authorized personnel only.</span>
@@ -685,6 +700,7 @@
 <div class="page page-break">
   <div class="page-body">
 
+    <div class="page-content">
     <!-- Page 2 header bar -->
     <div class="p2-header">
       <div class="p2-header-left">
@@ -768,6 +784,8 @@
       {% endif %}
     </div>
     {% endfor %}
+
+    </div><!-- /page-content -->
 
     <!-- Footer -->
     <div class="footer">
