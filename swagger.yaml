@@ -132,86 +132,6 @@ components:
           type: string
           format: password
 
-    # ── Report Requests ───────────────────────────────────────────────────────
-
-    ReportRequestStatus:
-      type: string
-      enum: [PENDING, RUNNING, PROCESSING, COMPLETE, FAILED]
-
-    ReportRequest:
-      type: object
-      properties:
-        id:
-          type: integer
-          readOnly: true
-        uuid:
-          type: string
-          format: uuid
-          readOnly: true
-        first_name:
-          type: string
-          maxLength: 150
-        last_name:
-          type: string
-          maxLength: 150
-        city:
-          type: string
-          maxLength: 100
-        state:
-          type: string
-          maxLength: 100
-        postal_code:
-          type: string
-          maxLength: 20
-        ssn:
-          type: string
-          maxLength: 11
-        ein:
-          type: string
-          maxLength: 10
-        id_type:
-          type: string
-          enum: [SSN, EIN]
-        status:
-          $ref: '#/components/schemas/ReportRequestStatus'
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
-        updated_at:
-          type: string
-          format: date-time
-          readOnly: true
-
-    ReportRequestCreateRequest:
-      type: object
-      required: [first_name, last_name, id_type]
-      properties:
-        first_name:
-          type: string
-          maxLength: 150
-        last_name:
-          type: string
-          maxLength: 150
-        city:
-          type: string
-          maxLength: 100
-        state:
-          type: string
-          maxLength: 100
-        postal_code:
-          type: string
-          maxLength: 20
-        ssn:
-          type: string
-          maxLength: 11
-        ein:
-          type: string
-          maxLength: 10
-        id_type:
-          type: string
-          enum: [SSN, EIN]
-
     # ── Products ──────────────────────────────────────────────────────────────
 
     StripePrice:
@@ -711,113 +631,6 @@ paths:
                 $ref: '#/components/schemas/User'
         '401':
           description: Unauthorized
-
-  # ── Report Requests ────────────────────────────────────────────────────────
-
-  /api/v1/report-requests/:
-    get:
-      tags: [Report Requests]
-      summary: List all report requests
-      responses:
-        '200':
-          description: List of report requests
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ReportRequest'
-        '401':
-          description: Unauthorized
-
-    post:
-      tags: [Report Requests]
-      summary: Create a new report request
-      description: >
-        Creates a report request and asynchronously triggers the
-        run_reports_dag Celery task via the post_save signal.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ReportRequestCreateRequest'
-      responses:
-        '201':
-          description: Report request created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReportRequest'
-        '400':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Unauthorized
-
-  /api/v1/report-requests/{id}/:
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-
-    get:
-      tags: [Report Requests]
-      summary: Retrieve a report request
-      responses:
-        '200':
-          description: Report request detail
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReportRequest'
-        '401':
-          description: Unauthorized
-        '404':
-          description: Not found
-
-    patch:
-      tags: [Report Requests]
-      summary: Partially update a report request
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ReportRequestCreateRequest'
-      responses:
-        '200':
-          description: Updated report request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReportRequest'
-        '400':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Unauthorized
-        '404':
-          description: Not found
-
-    delete:
-      tags: [Report Requests]
-      summary: Delete a report request
-      responses:
-        '204':
-          description: Deleted
-        '401':
-          description: Unauthorized
-        '404':
-          description: Not found
 
   # ── Products ───────────────────────────────────────────────────────────────
 
@@ -1368,6 +1181,34 @@ paths:
           description: Unauthorized
         '404':
           description: Not found
+
+  /api/v1/practices/{practice_id}/report:
+    parameters:
+      - name: practice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      tags: [Practices]
+      summary: Generate a provider verification report PDF
+      description: >
+        Generates and returns a PDF report of all providers linked to the
+        practice, including their NPI and DEA verification statuses.
+      responses:
+        '200':
+          description: PDF report
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized
+        '404':
+          description: Practice not found
 
   # ── Providers ──────────────────────────────────────────────────────────────
 
