@@ -476,6 +476,47 @@ components:
           enum: [default, medical_director]
           default: default
 
+    # ── Practice Status ───────────────────────────────────────────────────────
+
+    PracticeStatusProvider:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        first_name:
+          type: string
+        last_name:
+          type: string
+        npi_verification_status:
+          allOf:
+            - $ref: '#/components/schemas/VerificationStatus'
+          nullable: true
+        dea_verification_status:
+          allOf:
+            - $ref: '#/components/schemas/VerificationStatus'
+          nullable: true
+
+    PracticeStatus:
+      type: object
+      properties:
+        practice_id:
+          type: string
+          format: uuid
+          readOnly: true
+        status:
+          type: string
+          enum: [pending, running, verified, failed]
+          description: >
+            Aggregated status across all providers. `running` if any
+            verification is in progress, `failed` if any failed, `verified`
+            if all are verified, `pending` if none have been checked yet.
+        providers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PracticeStatusProvider'
+
     # ── Errors ────────────────────────────────────────────────────────────────
 
     Error:
@@ -768,6 +809,46 @@ paths:
                 $ref: '#/components/schemas/UserAPIKey'
         '401':
           description: Unauthorized
+
+  # ── Practice Status ───────────────────────────────────────────────────────
+
+  /api/v1/practice-status:
+    get:
+      tags: [Practices]
+      summary: Retrieve the verification status of a practice
+      description: >
+        Returns the aggregated verification status for all providers linked to
+        the given practice. The top-level `status` is `running` if any
+        provider verification is in progress, `failed` if any have failed,
+        `verified` if all are verified, or `pending` if none have been checked.
+      parameters:
+        - name: practice_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Practice verification status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PracticeStatus'
+        '400':
+          description: Missing practice_id parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Practice not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   # ── NPI Credentials ───────────────────────────────────────────────────────
 

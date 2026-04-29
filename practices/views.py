@@ -11,13 +11,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .business_logic import autofill, nppes_search
-from .models import Practice, Provider, ProviderByPractice
+from .models import Practice, PracticeVerificationView, Provider, ProviderByPractice
 from .serializers import (
     DeaCertificateUploadSerializer,
     DeaCredentialSerializer,
     NpiCredentialSerializer,
     PracticeProviderCreateSerializer,
     PracticeSerializer,
+    PracticeStatusSerializer,
     ProviderSerializer,
 )
 
@@ -276,3 +277,34 @@ class DeaCertificateUploadView(generics.CreateAPIView):
         provider.dea_credential = credential
         provider.save()
         run_dea_license_extraction.delay(str(credential.id))
+
+
+class PracticeStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        practice_id = request.query_params.get('practice_id')
+        if not practice_id:
+            return Response({'error': 'practice_id is required.'}, status=400)
+
+        try:
+            practice_view = PracticeVerificationView.objects.get(pk=practice_id)
+        except PracticeVerificationView.DoesNotExist:
+            raise NotFound('Practice not found.')
+
+        providers = list(
+            Provider.objects.filter(
+                provider_practices__practice_id=practice_id,
+            ).only(
+                'id', 'first_name', 'last_name',
+                'npi_verification_status', 'dea_verification_status',
+            )
+        )
+
+        data = {
+            'practice_id': practice_view.id,
+            'status': practice_view.verification_status,
+            'providers': providers,
+        }
+        serializer = PracticeStatusSerializer(data)
+        return Response(serializer.data)

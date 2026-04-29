@@ -2,6 +2,20 @@ from rest_framework import serializers
 
 from vida_verified.models import DeaCredential, NpiCredential
 
+
+class PracticeStatusProviderSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    npi_verification_status = serializers.CharField(allow_null=True)
+    dea_verification_status = serializers.CharField(allow_null=True)
+
+
+class PracticeStatusSerializer(serializers.Serializer):
+    practice_id = serializers.UUIDField()
+    status = serializers.CharField()
+    providers = PracticeStatusProviderSerializer(many=True)
+
 from .models import (
     Practice,
     Provider,

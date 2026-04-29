@@ -4,6 +4,16 @@ from django.db import models
 from django_materialized_view.base_model import MaterializedViewModel
 
 
+class PracticeVerificationView(MaterializedViewModel):
+    create_pkey_index = True
+
+    id = models.UUIDField(primary_key=True, editable=False)
+    verification_status = models.CharField(max_length=10)
+
+    class Meta:
+        managed = False
+
+
 class Practice(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255, blank=True, default='')

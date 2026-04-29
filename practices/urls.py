@@ -3,12 +3,13 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (
     CurrentPracticeView,
-    PracticeReportView,
     DeaCertificateUploadView,
     DeaCredentialCreateView,
     NpiCredentialCreateView,
     NppesSearchView,
     PracticeProviderCreateView,
+    PracticeReportView,
+    PracticeStatusView,
     PracticeViewSet,
     ProviderTitleListView,
     ProviderVerifyView,
@@ -22,6 +23,11 @@ router.register('practices', PracticeViewSet, basename='practice')
 router.register('providers', ProviderViewSet, basename='provider')
 
 urlpatterns = router.urls + [
+    path(
+        'practice-status',
+        PracticeStatusView.as_view(),
+        name='practice-status',
+    ),
     path(
         'practices/current',
         CurrentPracticeView.as_view(),
