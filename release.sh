@@ -1,5 +1,5 @@
 #!/bin/bash
-python manage.py migrate_with_views --noinput
+python manage.py migrate_with_views
 python manage.py collectstatic --noinput
 
 export DJANGO_SUPERUSER_USERNAME=admin
